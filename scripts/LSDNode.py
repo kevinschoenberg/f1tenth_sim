@@ -9,7 +9,15 @@ from geometry_msgs.msg import Twist
 from ackermann_msgs.msg import AckermannDriveStamped, AckermannDrive
 from geometry_msgs.msg import PoseWithCovarianceStamped, PoseStamped
 import time
-        
+import yaml
+from os.path import expanduser
+
+home = expanduser('~')
+filey =  open(home + '/catkin_ws/src/f1tenth_sim/lsdParam.yaml', "r")
+yamldata = yaml.safe_load(filey)
+desired_velocity = yamldata['desired_velocity']
+filey.close()
+
 def key_pressed_call_back(data):
 	if (data.data == 'w'):
 		print("v")
@@ -20,7 +28,7 @@ def key_pressed_call_back(data):
 		#
 		time.sleep(1.)
 		# speed 5
-		drive_ack_pub(6.0)
+		drive_ack_pub(desired_velocity)
 		time.sleep(1.)
 		rospy.signal_shutdown("dones")
 

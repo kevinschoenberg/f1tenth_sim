@@ -15,23 +15,25 @@ from tf.transformations import euler_from_quaternion
 import csv
 import time
 from threading import Thread, Event, enumerate, current_thread
-
+import yaml
 
 home = expanduser('~')
 
 	#file = open(strftime(home+'/sim_ws/our_test_logs/wp-%Y-%m-%d-%H-%M-%S',gmtime())+'.csv', 'w')
-	
 doLog = False
 simStart = time.time()
 data_stream = None
 
-# create a shared event
-event = Event()
 
+filey =  open(home + '/catkin_ws/src/f1tenth_sim/logParam.yaml', "r")
+yamldata = yaml.safe_load(filey)
+desired_velocity_yaml = yamldata['desired_velocity']
+mu = yamldata['friction_coeff']
+#filey.close()
 file = None
 
-        # body of destructor
-        #file.close()
+# body of destructor
+# file.close()
 
 def key_pressed_call_back(data):
 	global doLog, file, simStart, data_stream
@@ -40,7 +42,7 @@ def key_pressed_call_back(data):
 		doLog = False
 		#open file
 		file = open(home +'/catkin_ws/src/f1tenth_sim/test_results/longitude-'+ str(gmtime()[1:6]) +'.csv', 'w')
-		header = ['x', 'y', 'yaw', 'speed', 'time']
+		header = ['x', 'y', 'yaw', 'speed', 'time', 'mu', 'desired_velocity']
 		writer = csv.writer(file)
 		writer.writerow(header)
 
@@ -67,7 +69,6 @@ def key_pressed_call_back(data):
 def save_waypoint_call_back(data):
 	global doLog, file, simStart, data_stream
 	data_stream = data
-    
 
 def save_log():
 	global doLog, file, simStart, data_stream
@@ -76,14 +77,12 @@ def save_log():
 	interval = 0.004
 	lastlogged = None
 	lastdatareading = None
+	desired_velocity = 0.0
 	while doLog:
 		if simStart + 10 < time.time():
 			print("Time taken for experiment", time.time()-simStart)
 			doLog = False
 			file.close()
-			#simStart = time.time()
-			#print(current_thread().getName())
-			#time.sleep(1.)
 			rospy.signal_shutdown("done")
 			return
 		if (lastlogged == None or lastlogged + interval < time.time()) :
@@ -101,12 +100,15 @@ def save_log():
 												data_stream.pose.pose.position.y,
 												euler[2],
 												speed)
+			if (speed != 0.0):
+				desired_velocity = desired_velocity_yaml
+			
 			if (lastdatareading == None or lastdatareading != newdatareading):
-				file.write('%f, %f, %f, %f, %f\n' % (data_stream.pose.pose.position.x,
+				file.write('%f, %f, %f, %f, %f, %f, %f\n' % (data_stream.pose.pose.position.x,
 												data_stream.pose.pose.position.y,
 												euler[2],
 												speed, 
-												rospy.get_rostime().to_time()))
+												rospy.get_rostime().to_time(),mu,desired_velocity))
 			lastdatareading = newdatareading
 			lastlogged = time.time()
 
