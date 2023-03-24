@@ -21,6 +21,8 @@ def key_pressed_call_back(data):
 		time.sleep(1.)
 		# speed 5
 		drive_ack_pub(6.0)
+		time.sleep(1.)
+		rospy.signal_shutdown("dones")
 
 drive_ack = rospy.Publisher('/lsdnode_drive', AckermannDriveStamped, queue_size=10)
         
@@ -43,7 +45,7 @@ def drive_ack_pub(speed):
 
 def set_initial_pose():
 	pose = PoseStamped()
-	pose.pose.position.x = -47.0
+	pose.pose.position.x = -50.0 #-47
 	pose.pose.position.y = 30.0
 	pose_pub.publish(pose)
     
@@ -70,4 +72,5 @@ def main(args=None):
 
 
 if __name__ == '__main__':
-    	main()
+	print("LSD node running")
+	main()

@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: ascii -*-
 import rospy
 
 import numpy as np
@@ -13,7 +14,7 @@ from numpy import linalg as LA
 from tf.transformations import euler_from_quaternion
 import csv
 import time
-from threading import Thread
+from threading import Thread, Event, enumerate, current_thread
 
 
 home = expanduser('~')
@@ -22,6 +23,10 @@ home = expanduser('~')
 	
 doLog = False
 simStart = time.time()
+data_stream = None
+
+# create a shared event
+event = Event()
 
 file = None
 
@@ -29,67 +34,90 @@ file = None
         #file.close()
 
 def key_pressed_call_back(data):
-	global doLog, file, simStart
-
+	global doLog, file, simStart, data_stream
+	
 	if (data.data == 'w'):
-		print("v")
 		doLog = False
 		#open file
-		file = open(home +'/catkin_ws/src/f1tenth_simulator/test_results/longitude-'+ str(gmtime()[1:6]) +'.csv', 'w')
+		file = open(home +'/catkin_ws/src/f1tenth_sim/test_results/longitude-'+ str(gmtime()[1:6]) +'.csv', 'w')
 		header = ['x', 'y', 'yaw', 'speed', 'time']
 		writer = csv.writer(file)
 		writer.writerow(header)
 
+		# reset data
+		#data_stream = []
 		# sleep
 		time.sleep(0.5)
 		# log data
 		doLog = True
+		new = Thread(name="Johny", target=save_log,args=())
+		# starter timer thread with logging
+		new.start() 
+		# setting start sim time
+		print("Start logging")
+		#simStart = time.time()
+		# Waiting to be logging done
+		#rospy.on_shutdown(new.join())
+		new.join()
+		#for t in enumerate():
+		#	print(t.name)
+		#	t.join()
+		#print("hest")
+		#rospy.signal_shutdown("done")
+	
 
-		simStart = time.time()
 
-
-
+# Saving data from odom.
 def save_waypoint_call_back(data):
-	global doLog, file, simStart
-
-	#print(rospy.get_rostime())
-	if doLog:
-		if simStart + 10 < time.time():
-			doLog = False
-			print(data.pose.pose.position.x)
-			file.close()
-			return
-		
-		quaternion = np.array([data.pose.pose.orientation.x, 
-							data.pose.pose.orientation.y, 
-							data.pose.pose.orientation.z, 
-							data.pose.pose.orientation.w])
-
-		euler = euler_from_quaternion(quaternion)
-		speed = LA.norm(np.array([data.twist.twist.linear.x, 
-								data.twist.twist.linear.y, 
-								data.twist.twist.linear.z]),2)
-		#if data.twist.twist.linear.x>0.:
-			#print (data.twist.twist.linear.x)
-		file.write('%f, %f, %f, %f, %f\n' % (data.pose.pose.position.x,
-										data.pose.pose.position.y,
-										euler[2],
-										speed, 
-										rospy.get_rostime().to_time()))
+	global doLog, file, simStart, data_stream
+	data_stream = data
     
+
+def save_log():
+	global doLog, file, simStart, data_stream
+	simStart = time.time()
+	# Logging with 0.002 interval in seconds 250 hertz
+	interval = 0.004
+	lastlogged = None
+	while doLog:
+		print(simStart + 10, time.time())
+		if simStart + 10 < time.time():
+			print("Time taken for experiment", time.time()-simStart)
+			doLog = False
+			file.close()
+			#simStart = time.time()
+			#print(current_thread().getName())
+			#time.sleep(1.)
+			rospy.signal_shutdown("done")
+			return
+		if lastlogged == None or lastlogged + interval < time.time():
+			quaternion = np.array([data_stream.pose.pose.orientation.x, 
+								data_stream.pose.pose.orientation.y, 
+								data_stream.pose.pose.orientation.z, 
+								data_stream.pose.pose.orientation.w])
+
+			euler = euler_from_quaternion(quaternion)
+			speed = LA.norm(np.array([data_stream.twist.twist.linear.x, 
+									data_stream.twist.twist.linear.y, 
+									data_stream.twist.twist.linear.z]),2)
+			file.write('%f, %f, %f, %f, %f\n' % (data_stream.pose.pose.position.x,
+											data_stream.pose.pose.position.y,
+											euler[2],
+											speed, 
+											rospy.get_rostime().to_time()))
+			lastlogged = time.time()
 
 odom = rospy.Subscriber('/odom', Odometry, save_waypoint_call_back, queue_size=10)
 
 	# Subsriber to read key pressed.
 keysub = rospy.Subscriber('/key', String, key_pressed_call_back, queue_size=10)
 
-
 def main(args=None):
     rospy.init_node('LoggerNode')
-
+    #print(data_stream)
     rospy.spin()
 
-    rospy.shutdown()
+    #rospy.shutdown()
 
 
 if __name__ == '__main__':
