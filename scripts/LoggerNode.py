@@ -52,17 +52,13 @@ def key_pressed_call_back(data):
 		doLog = True
 		new = Thread(name="Johny", target=save_log,args=())
 		# starter timer thread with logging
-		new.start() 
+		new.start()
 		# setting start sim time
 		print("Start logging")
 		#simStart = time.time()
 		# Waiting to be logging done
 		#rospy.on_shutdown(new.join())
 		new.join()
-		#for t in enumerate():
-		#	print(t.name)
-		#	t.join()
-		#print("hest")
 		#rospy.signal_shutdown("done")
 	
 
@@ -79,8 +75,8 @@ def save_log():
 	# Logging with 0.002 interval in seconds 250 hertz
 	interval = 0.004
 	lastlogged = None
+	lastdatareading = None
 	while doLog:
-		print(simStart + 10, time.time())
 		if simStart + 10 < time.time():
 			print("Time taken for experiment", time.time()-simStart)
 			doLog = False
@@ -90,7 +86,8 @@ def save_log():
 			#time.sleep(1.)
 			rospy.signal_shutdown("done")
 			return
-		if lastlogged == None or lastlogged + interval < time.time():
+		if (lastlogged == None or lastlogged + interval < time.time()) :
+			print(time.time())
 			quaternion = np.array([data_stream.pose.pose.orientation.x, 
 								data_stream.pose.pose.orientation.y, 
 								data_stream.pose.pose.orientation.z, 
@@ -100,11 +97,17 @@ def save_log():
 			speed = LA.norm(np.array([data_stream.twist.twist.linear.x, 
 									data_stream.twist.twist.linear.y, 
 									data_stream.twist.twist.linear.z]),2)
-			file.write('%f, %f, %f, %f, %f\n' % (data_stream.pose.pose.position.x,
-											data_stream.pose.pose.position.y,
-											euler[2],
-											speed, 
-											rospy.get_rostime().to_time()))
+			newdatareading = (data_stream.pose.pose.position.x,
+												data_stream.pose.pose.position.y,
+												euler[2],
+												speed)
+			if (lastdatareading == None or lastdatareading != newdatareading):
+				file.write('%f, %f, %f, %f, %f\n' % (data_stream.pose.pose.position.x,
+												data_stream.pose.pose.position.y,
+												euler[2],
+												speed, 
+												rospy.get_rostime().to_time()))
+			lastdatareading = newdatareading
 			lastlogged = time.time()
 
 odom = rospy.Subscriber('/odom', Odometry, save_waypoint_call_back, queue_size=10)
