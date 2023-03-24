@@ -2,7 +2,7 @@
 
 
 vel_counter=1
-start_vel=1.
+start_vel=6.
 vel_step_size=0.5
 while [ $vel_counter -le 2 ]
 do
@@ -17,7 +17,7 @@ do
 
     sleep 1
     counter=1
-    while [ $counter -le 2 ]
+    while [ $counter -le 4 ]
     do
         cd
         cd ~/catkin_ws/src/f1tenth_sim
