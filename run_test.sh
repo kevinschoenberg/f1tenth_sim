@@ -2,29 +2,31 @@
 
 
 vel_counter=1
-start_vel=6.
+start_vel=5.
 vel_step_size=0.5
-while [ $vel_counter -le 2 ]
+while [ $vel_counter -le 4 ]
 do
     cd
     cd ~/catkin_ws/src/f1tenth_sim
 
-    new_des=$(echo "$start_vel + $vel_counter * $vel_step_size" | bc -l)
+    new_des=$(echo "$start_vel + ($vel_counter - 1) * $vel_step_size" | bc -l)
     sed -i "s/\bdesired_velocity\b:.*/desired_velocity: $new_des/" lsdParam.yaml
 
-    new_des=$(echo "$start_vel + $vel_counter * $vel_step_size" | bc -l)
     sed -i "s/\bdesired_velocity\b:.*/desired_velocity: $new_des/" logParam.yaml
 
     sleep 1
     counter=1
-    while [ $counter -le 4 ]
+    while [ $counter -le 2 ]
     do
         cd
         cd ~/catkin_ws/src/f1tenth_sim
 
-        coeff_step_size=0.1
-        new_coeff=$(echo "$counter * $coeff_step_size" | bc -l)
+        coeff_step_size=0.9
+        coeff_step_start=0.1
+        new_coeff=$(echo "$coeff_step_start + ($counter - 1) * $coeff_step_size" | bc -l)
         sed -i "s/\bfriction_coeff\b:.*/friction_coeff: $new_coeff/" params.yaml
+
+        sed -i "s/\bfriction_coeff\b:.*/friction_coeff: $new_coeff/" logParam.yaml
 
         sleep 1
 
