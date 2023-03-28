@@ -56,7 +56,7 @@ def key_pressed_call_back(data):
 		# starter timer thread with logging
 		new.start()
 		# setting start sim time
-		print("Start logging")
+		#print("Start logging")
 		#simStart = time.time()
 		# Waiting to be logging done
 		#rospy.on_shutdown(new.join())
@@ -86,7 +86,6 @@ def save_log():
 			rospy.signal_shutdown("done")
 			return
 		if (lastlogged == None or lastlogged + interval < time.time()) :
-			print(time.time())
 			quaternion = np.array([data_stream.pose.pose.orientation.x, 
 								data_stream.pose.pose.orientation.y, 
 								data_stream.pose.pose.orientation.z, 
@@ -103,7 +102,7 @@ def save_log():
 			if (speed != 0.0):
 				desired_velocity = desired_velocity_yaml
 			
-			if (lastdatareading == None or lastdatareading != newdatareading):
+			if (lastdatareading == None or lastdatareading != newdatareading or desired_velocity == 0.0):
 				file.write('%f, %f, %f, %f, %f, %f, %f\n' % (data_stream.pose.pose.position.x,
 												data_stream.pose.pose.position.y,
 												euler[2],
