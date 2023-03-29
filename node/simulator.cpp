@@ -505,7 +505,7 @@ public:
         if (state.velocity > 0) {
             if (dif > 0) {
                 // accelerate
-                double kp = 8.0 * max_accel / max_speed; //2.0
+                double kp = 4.0 * max_accel / max_speed; //2.0
                 set_accel(kp * dif);
             } else {
                 // brake
@@ -632,7 +632,7 @@ public:
             ps.pose.orientation.z = quat.z();
             ps.pose.orientation.w = quat.w();
 
-            // Add a header to the transformation
+            // Add a header to the transformationks
             geometry_msgs::TransformStamped ts;
             ts.transform = t;
             ts.header.stamp = timestamp;
