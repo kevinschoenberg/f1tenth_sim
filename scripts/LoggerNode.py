@@ -16,7 +16,7 @@ import csv
 import time
 from threading import Thread, Event, enumerate, current_thread
 import yaml
-
+from ackermann_msgs.msg import AckermannDriveStamped, AckermannDrive
 home = expanduser('~')
 
 	#file = open(strftime(home+'/sim_ws/our_test_logs/wp-%Y-%m-%d-%H-%M-%S',gmtime())+'.csv', 'w')
@@ -27,7 +27,7 @@ data_stream = None
 
 filey =  open(home + '/catkin_ws/src/f1tenth_sim/logParam.yaml', "r")
 yamldata = yaml.safe_load(filey)
-desired_velocity_yaml = yamldata['desired_velocity']
+#desired_velocity_yaml = yamldata['desired_velocity']
 mu = yamldata['friction_coeff']
 #filey.close()
 file = None
@@ -70,6 +70,11 @@ def save_waypoint_call_back(data):
 	global doLog, file, simStart, data_stream
 	data_stream = data
 
+# Saving desired velocity data from drive.
+def save_drive_call_back(data):
+	global desired_velocity
+	desired_velocity = data
+
 def save_log():
 	global doLog, file, simStart, data_stream
 	simStart = time.time()
@@ -77,7 +82,7 @@ def save_log():
 	interval = 0.004
 	lastlogged = None
 	lastdatareading = None
-	desired_velocity = 0.0
+	desired_velocity = 0.0 # Start desire velocity
 	while doLog:
 		if simStart + 10 < time.time():
 			print("Time taken for experiment", time.time()-simStart)
@@ -98,9 +103,9 @@ def save_log():
 			newdatareading = (data_stream.pose.pose.position.x,
 												data_stream.pose.pose.position.y,
 												euler[2],
-												speed)
-			if (speed != 0.0):
-				desired_velocity = desired_velocity_yaml
+												speed,desired_velocity)
+			#if (speed != 0.0):
+			#	desired_velocity = desired_velocity_yaml
 			
 			if (lastdatareading == None or lastdatareading != newdatareading or desired_velocity == 0.0):
 				file.write('%f, %f, %f, %f, %f, %f, %f\n' % (data_stream.pose.pose.position.x,
@@ -116,6 +121,8 @@ odom = rospy.Subscriber('/odom', Odometry, save_waypoint_call_back, queue_size=1
 	# Subsriber to read key pressed.
 keysub = rospy.Subscriber('/key', String, key_pressed_call_back, queue_size=10)
 
+    # Subsriber to drive
+drive = rospy.Subscriber('/drive', AckermannDriveStamped, save_drive_call_back, queue_size=10)
 def main(args=None):
     rospy.init_node('LoggerNode')
     #print(data_stream)

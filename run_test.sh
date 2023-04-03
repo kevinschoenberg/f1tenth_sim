@@ -2,9 +2,9 @@
 
 
 vel_counter=1
-start_vel=5.
-vel_step_size=0.5
-while [ $vel_counter -le 4 ]
+start_vel=6.
+vel_step_size=0.
+while [ $vel_counter -le 1 ]
 do
     cd
     cd ~/catkin_ws/src/f1tenth_sim
