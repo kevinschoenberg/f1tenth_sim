@@ -31,7 +31,7 @@ yamldata = yaml.safe_load(filey)
 mu = yamldata['friction_coeff']
 #filey.close()
 file = None
-
+desired_velocity = 0.0 # Start desire velocity
 # body of destructor
 # file.close()
 
@@ -73,16 +73,15 @@ def save_waypoint_call_back(data):
 # Saving desired velocity data from drive.
 def save_drive_call_back(data):
 	global desired_velocity
-	desired_velocity = data
+	desired_velocity = data.drive.speed
 
 def save_log():
-	global doLog, file, simStart, data_stream
+	global desired_velocity, doLog, file, simStart, data_stream
 	simStart = time.time()
 	# Logging with 0.002 interval in seconds 250 hertz
 	interval = 0.004
 	lastlogged = None
 	lastdatareading = None
-	desired_velocity = 0.0 # Start desire velocity
 	while doLog:
 		if simStart + 10 < time.time():
 			print("Time taken for experiment", time.time()-simStart)
@@ -122,7 +121,8 @@ odom = rospy.Subscriber('/odom', Odometry, save_waypoint_call_back, queue_size=1
 keysub = rospy.Subscriber('/key', String, key_pressed_call_back, queue_size=10)
 
     # Subsriber to drive
-drive = rospy.Subscriber('/drive', AckermannDriveStamped, save_drive_call_back, queue_size=10)
+drive = rospy.Subscriber('/lsdnode_drive', AckermannDriveStamped, save_drive_call_back, queue_size=10)
+
 def main(args=None):
     rospy.init_node('LoggerNode')
     #print(data_stream)
