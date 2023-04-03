@@ -17,7 +17,7 @@ CarState STKinematics::update(
         double dt) {
 
 
-    double thresh = .1; // cut off to avoid singular behavior
+    double thresh = .5; // cut off to avoid singular behavior
     double err = .03; // deadband to avoid flip flop
     if (!start.st_dyn)
         thresh += err;
@@ -40,7 +40,7 @@ CarState STKinematics::update(
     // compute first derivatives of state
     double x_dot = start.velocity * std::cos(start.theta + start.slip_angle);
     double y_dot = start.velocity * std::sin(start.theta + start.slip_angle);
-    double v_dot = 0.3*accel*exp(1-(1-p.friction_coeff)*accel);//accel;
+    double v_dot = accel;//0.3*accel*exp(1-(1-p.friction_coeff)*accel);//accel;
     double steer_angle_dot = steer_angle_vel;
     double theta_dot = start.angular_velocity;
 
