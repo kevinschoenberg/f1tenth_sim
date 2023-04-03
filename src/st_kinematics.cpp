@@ -40,7 +40,7 @@ CarState STKinematics::update(
     // compute first derivatives of state
     double x_dot = start.velocity * std::cos(start.theta + start.slip_angle);
     double y_dot = start.velocity * std::sin(start.theta + start.slip_angle);
-    double v_dot = -1*(2.3*p.friction_coeff*accel)*(2/(0.1-exp(0.5*accel))-0.4*p.friction_coeff);//accel;
+    double v_dot = 0.3*accel*exp(1-(1-p.friction_coeff)*accel);//accel;
     double steer_angle_dot = steer_angle_vel;
     double theta_dot = start.angular_velocity;
 
