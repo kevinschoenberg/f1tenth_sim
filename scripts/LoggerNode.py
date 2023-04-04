@@ -105,13 +105,17 @@ def save_log():
 												speed,desired_velocity)
 			#if (speed != 0.0):
 			#	desired_velocity = desired_velocity_yaml
-			
-			if (lastdatareading == None or desired_velocity == 0.0): #or lastdatareading != newdatareading
-				file.write('%f, %f, %f, %f, %f, %f, %f\n' % (data_stream.pose.pose.position.x,
+			file.write('%f, %f, %f, %f, %f, %f, %f\n' % (data_stream.pose.pose.position.x,
 												data_stream.pose.pose.position.y,
 												euler[2],
 												speed, 
 												rospy.get_rostime().to_time(),mu,desired_velocity))
+			#if (lastdatareading == None or desired_velocity == 0.0): #or lastdatareading != newdatareading
+			#	file.write('%f, %f, %f, %f, %f, %f, %f\n' % (data_stream.pose.pose.position.x,
+			#									data_stream.pose.pose.position.y,
+			#									euler[2],
+			#									speed, 
+			#									rospy.get_rostime().to_time(),mu,desired_velocity))
 			lastdatareading = newdatareading
 			lastlogged = time.time()
 
