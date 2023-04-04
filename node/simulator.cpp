@@ -505,7 +505,7 @@ public:
         if (state.velocity > 0) {
             if (dif > 0) {
                 // accelerate
-                double kp = 4.0 * max_accel / max_speed; //2.0
+                double kp = 2.0 * max_accel / max_speed; //2.0
                 set_accel(kp * dif);
             } else {
                 // brake
