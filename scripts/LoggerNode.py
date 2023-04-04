@@ -99,10 +99,10 @@ def save_log():
 			speed = LA.norm(np.array([data_stream.twist.twist.linear.x, 
 									data_stream.twist.twist.linear.y, 
 									data_stream.twist.twist.linear.z]),2)
-			newdatareading = (data_stream.pose.pose.position.x,
-												data_stream.pose.pose.position.y,
-												euler[2],
-												speed,desired_velocity)
+			#newdatareading = (data_stream.pose.pose.position.x,
+			#									data_stream.pose.pose.position.y,
+			#									euler[2],
+			#									speed,desired_velocity)
 			#if (speed != 0.0):
 			#	desired_velocity = desired_velocity_yaml
 			file.write('%f, %f, %f, %f, %f, %f, %f\n' % (data_stream.pose.pose.position.x,
@@ -116,7 +116,7 @@ def save_log():
 			#									euler[2],
 			#									speed, 
 			#									rospy.get_rostime().to_time(),mu,desired_velocity))
-			lastdatareading = newdatareading
+			#lastdatareading = newdatareading
 			lastlogged = time.time()
 
 odom = rospy.Subscriber('/odom', Odometry, save_waypoint_call_back, queue_size=10)
