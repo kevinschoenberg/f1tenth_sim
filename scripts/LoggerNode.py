@@ -29,7 +29,8 @@ filey =  open(home + '/catkin_ws/src/f1tenth_sim/logParam.yaml', "r")
 yamldata = yaml.safe_load(filey)
 #desired_velocity_yaml = yamldata['desired_velocity']
 mu = yamldata['friction_coeff']
-#filey.close()
+a_max = yamldata['max_accel']
+filey.close()
 file = None
 desired_velocity = 0.0 # Start desire velocity
 # body of destructor
@@ -42,7 +43,7 @@ def key_pressed_call_back(data):
 		doLog = False
 		#open file
 		file = open(home +'/catkin_ws/src/f1tenth_sim/test_results/longitude-'+ str(gmtime()[1:6]) +'.csv', 'w')
-		header = ['x', 'y', 'yaw', 'speed', 'time', 'mu', 'desired_velocity']
+		header = ['x', 'y', 'yaw', 'speed', 'a_max', 'time', 'mu', 'desired_velocity']
 		writer = csv.writer(file)
 		writer.writerow(header)
 
@@ -105,10 +106,10 @@ def save_log():
 			#									speed,desired_velocity)
 			#if (speed != 0.0):
 			#	desired_velocity = desired_velocity_yaml
-			file.write('%f, %f, %f, %f, %f, %f, %f\n' % (data_stream.pose.pose.position.x,
+			file.write('%f, %f, %f, %f, %f, %f, %f, %f\n' % (data_stream.pose.pose.position.x,
 												data_stream.pose.pose.position.y,
 												euler[2],
-												speed, 
+												speed,a_max, 
 												rospy.get_rostime().to_time(),mu,desired_velocity))
 			#if (lastdatareading == None or desired_velocity == 0.0): #or lastdatareading != newdatareading
 			#	file.write('%f, %f, %f, %f, %f, %f, %f\n' % (data_stream.pose.pose.position.x,

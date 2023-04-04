@@ -1,10 +1,13 @@
 #! /bin/bash
 
-
+declare -A List_acc
+List_acc=(['.1']=1.11 [.2]=1.25 [.3]=1.43 [.4]=1.67 [.5]=2.0 [.6]=2.5 [.7]=3.33 [.8]=5.0 [.9]=7.51 [1.0]=7.51)
 vel_counter=1
 start_vel=5.
 vel_step_size=0.
-while [ $vel_counter -le 2 ]
+coeff_step_size=0.1
+coeff_step_start=0.1
+while [ $vel_counter -le 1 ]
 do
     cd
     cd ~/catkin_ws/src/f1tenth_sim
@@ -16,17 +19,20 @@ do
 
     sleep 1
     counter=1
-    while [ $counter -le 2 ]
+    while [ $counter -le 10 ]
     do
         cd
         cd ~/catkin_ws/src/f1tenth_sim
 
-        coeff_step_size=0.9
-        coeff_step_start=0.1
         new_coeff=$(echo "$coeff_step_start + ($counter - 1) * $coeff_step_size" | bc -l)
         sed -i "s/\bfriction_coeff\b:.*/friction_coeff: $new_coeff/" params.yaml
 
         sed -i "s/\bfriction_coeff\b:.*/friction_coeff: $new_coeff/" logParam.yaml
+        new_a_max=${List_acc[$new_coeff]}
+        printf '${List_acc[%s]}=%s\n' "${new_coeff}" "$new_a_max"
+        sed -i "s/\bmax_accel\b:.*/max_accel: $new_a_max/" params.yaml
+
+        sed -i "s/\bmax_accel\b:.*/max_accel: $new_a_max/" logParam.yaml
 
         sleep 1
 
