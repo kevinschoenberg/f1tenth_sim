@@ -1,7 +1,7 @@
 #! /bin/bash
 
 declare -A List_acc
-List_acc=(['.1']=1.11 [.2]=1.25 [.3]=1.43 [.4]=1.67 [.5]=2.0 [.6]=2.5 [.7]=3.33 [.8]=5.0 [.9]=7.51 [1.0]=7.51)
+List_acc=(['.1']=1.11 [.2]=1.25 [.3]=1.43 [.4]=1.67 ['.5']=2.0 [.6]=2.5 [.7]=3.33 [.8]=5.0 [.9]=7.51 [1.0]=7.51)
 vel_counter=1
 start_vel=5.
 vel_step_size=0.
@@ -28,8 +28,14 @@ do
         sed -i "s/\bfriction_coeff\b:.*/friction_coeff: $new_coeff/" params.yaml
 
         sed -i "s/\bfriction_coeff\b:.*/friction_coeff: $new_coeff/" logParam.yaml
-        new_a_max=${List_acc[$new_coeff]}
-        printf '${List_acc[%s]}=%s\n' "${new_coeff}" "$new_a_max"
+
+        #Use optimal model on each surface
+        #new_a_max=${List_acc[$new_coeff]}
+
+        #Use one model for all surfaces
+        new_a_max=${List_acc['.5']}
+
+        #printf '${List_acc[%s]}=%s\n' "${new_coeff}" "$new_a_max"
         sed -i "s/\bmax_accel\b:.*/max_accel: $new_a_max/" params.yaml
 
         sed -i "s/\bmax_accel\b:.*/max_accel: $new_a_max/" logParam.yaml
@@ -55,7 +61,7 @@ do
 
         rostopic pub -1 /key std_msgs/String w
 
-        sleep 12
+        sleep 23
 
         terminator -e "killall -9 rosmaster"
         ((counter++))

@@ -84,13 +84,15 @@ def save_log():
 	lastlogged = None
 	lastdatareading = None
 	while doLog:
-		if simStart + 10 < rospy.get_rostime().to_time(): #time.time()
-			print("Time taken for experiment", rospy.get_rostime().to_time()-simStart) ##time.time()
+		sim_time = data_stream.header.stamp.to_sec()
+		print(sim_time)
+		if simStart + 20 < sim_time: #time.time()
+			print("Time taken for experiment", sim_time-simStart) ##time.time()
 			doLog = False
 			file.close()
 			rospy.signal_shutdown("done")
 			return
-		if (lastlogged == None or lastlogged + interval < rospy.get_rostime().to_time()): #time.time()) :
+		if (lastlogged == None or lastlogged + interval < sim_time): #time.time()) :
 			quaternion = np.array([data_stream.pose.pose.orientation.x, 
 								data_stream.pose.pose.orientation.y, 
 								data_stream.pose.pose.orientation.z, 
@@ -110,7 +112,7 @@ def save_log():
 												data_stream.pose.pose.position.y,
 												euler[2],
 												speed,a_max, 
-												rospy.get_rostime().to_time(),mu,desired_velocity))
+												sim_time,mu,desired_velocity))
 			#if (lastdatareading == None or desired_velocity == 0.0): #or lastdatareading != newdatareading
 			#	file.write('%f, %f, %f, %f, %f, %f, %f\n' % (data_stream.pose.pose.position.x,
 			#									data_stream.pose.pose.position.y,
@@ -118,7 +120,7 @@ def save_log():
 			#									speed, 
 			#									rospy.get_rostime().to_time(),mu,desired_velocity))
 			#lastdatareading = newdatareading
-			lastlogged = rospy.get_rostime().to_time()#time.time()
+			lastlogged = sim_time#time.time()
 
 odom = rospy.Subscriber('/odom', Odometry, save_waypoint_call_back, queue_size=10)
 
