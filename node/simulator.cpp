@@ -29,7 +29,7 @@
 
 #include <iostream>
 #include <math.h>
-
+#include <cmath>
 
 using namespace racecar_simulator;
 
@@ -127,11 +127,11 @@ private:
     std::vector<double> steering_buffer;
 
     // data collected vores kode
-    int data_buffer_lenght;
-    std::vector<double> data_buffer;
+    int reading_buffer_lenght = 10;
+    std::vector<double> readings_;
     std::vector<double> models = {1.11,1.25, 1.43, 1.67, 2.0, 2.5, 3.33, 5.0, 7.51, 7.51};
     int min_model = 0;
-    // int max_model = models.size;
+    int max_model = models.size();
     int Initialize_model;
     int Current_model;
 
@@ -315,17 +315,56 @@ public:
     }
 
     // Vores kode
-    /*
-     void action_raise(){
-        state.velocity
-        data_buffer
-    }*/
+    double expected_velocity = 0.0;
+    double slip_ratio;
+    double calc_expected_velocity(double dt){
+        double dif = (desired_speed - state.velocity);
+        double expected_accel = dif * 2.0 * max_accel / max_speed * 0.3;
+
+        return expected_accel*dt + expected_velocity;
+    }
+
+    double calc_slip_ratio(){
+        double dif = (expected_velocity - state.velocity);
+        return dif/state.velocity;
+    }
+
+    void tcs(){
+        if(state.velocity - desired_speed >= 0.1){ //Model active
+            if(std::abs(slip_ratio) > 0.15){ //Flag
+                if(state.velocity - expected_velocity >= 0.1){ //diff
+                    int action = -1*sign(slip_ratio); //Action
+                    chance_model(action);
+                }
+                else{
+                    return;
+                }
+            }
+            else{
+                return;
+            }
+        }
+        else{
+            return;
+        }
+    }
+
+    int sign(double value){
+        if(value >= 0){
+            return 1;
+        }
+        else{
+            return -1;
+        }
+    }
     // - beregnes med en tick bagud.
     // Beregn expected 
+        // acceleration
+        // velocity 
     // Beregn slip_ratio 
     // Beregn difff 
     // insert into a data_buffer liste af gemte data.
-    // Step 1 lav en liste undervejs, der indeholder prev 10 samples . push og pop_back
+    // Step 1 lav en liste undervejs, der indeholder prev 10 samples. push og pop_back
     // Publish model change topic, som logger læser på og skifter model anvendt ved call_back til logging
     
     // df['slip_ratio'] = np.where(df.speed == 0.0, 0.0, (df.expected_vel-df.speed) / df.speed)
@@ -335,16 +374,33 @@ public:
     // df['action'] = np.where(df.flag + df.difff == 1., 1.0 * (-1) * np.sign(df.slip_ratio), 0.0)
 
     // l = -1 or 1
-    /*
     void chance_model(int l){
         if(Current_model + l <= max_model and Current_model + l >= min_model){
             Current_model = Initialize_model + l;
             max_accel = models[Current_model];
         }
+    }
+    // Our code --------------------
+    /*
+    void AddReading(double reading) {
+        readings_.pushback(reading);
+        if (readings.size() > reading_buffer_lenght) {
+            readings.erase(readings.begin());
+        }
+    }
+
+    int GetReading(int i) const {
+        return readings[i];
+    }
+
+    int GetNumReadings() const {
+        return readings.size();
     }*/
+    // ------------------------------
 
     void update_pose(const ros::TimerEvent&) {
-        // simulate P controller 
+        // simulate P controller
+
         compute_accel(desired_speed);
         if (state.velocity > 1.5){
             max_accel = 7.51;
@@ -371,6 +427,11 @@ public:
             current_seconds - previous_seconds);
         state.velocity = std::min(std::max(state.velocity, -max_speed), max_speed);
         state.steer_angle = std::min(std::max(state.steer_angle, -max_steering_angle), max_steering_angle);
+
+        double dt = current_seconds - previous_seconds; //delta time
+        expected_velocity = calc_expected_velocity(dt);
+        slip_ratio = calc_slip_ratio(); 
+        tcs();
 
         previous_seconds = current_seconds;
 
@@ -737,6 +798,7 @@ public:
             odom.twist.twist.linear.x = state.velocity;
             odom.twist.twist.angular.z = state.angular_velocity;
             odom_pub.publish(odom);
+            //AddReading(state.velocity);
         }
 
         void pub_imu(ros::Time timestamp) {

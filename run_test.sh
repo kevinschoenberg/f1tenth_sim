@@ -30,10 +30,10 @@ do
         sed -i "s/\bfriction_coeff\b:.*/friction_coeff: $new_coeff/" logParam.yaml
 
         #Use optimal model on each surface
-        new_a_max=${List_acc[$new_coeff]}
+        #new_a_max=${List_acc[$new_coeff]}
 
         #Use one model for all surfaces
-        #new_a_max=${List_acc['.5']}
+        new_a_max=${List_acc['.5']}
 
         #printf '${List_acc[%s]}=%s\n' "${new_coeff}" "$new_a_max"
         sed -i "s/\bmax_accel\b:.*/max_accel: $new_a_max/" params.yaml
