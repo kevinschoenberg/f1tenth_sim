@@ -402,9 +402,6 @@ public:
         // simulate P controller
 
         compute_accel(desired_speed);
-        if (state.velocity > 1.5){
-            max_accel = 7.51;
-        }
         double actual_ang = 0.0;
         if (steering_buffer.size() < buffer_length) {
             steering_buffer.push_back(desired_steer_ang);
