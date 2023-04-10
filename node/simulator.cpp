@@ -131,12 +131,12 @@ private:
     std::vector<double> data_buffer;
     std::vector<double> models = {1.11,1.25, 1.43, 1.67, 2.0, 2.5, 3.33, 5.0, 7.51, 7.51};
     int min_model = 0;
-    int max_model = models.size;
+    // int max_model = models.size;
     int Initialize_model;
     int Current_model;
 
 public:
-
+    double max_accellll;
     RacecarSimulator(): im_server("racecar_sim") {
         // Initialize the node handle
         n = ros::NodeHandle("~");
@@ -193,9 +193,9 @@ public:
         n.getParam("moment_inertia", params.I_z);
         n.getParam("mass", params.mass);
         n.getParam("width", width);
-
+        max_accellll = max_accel;
         // model vores kode
-        Current_model = find(models.begin, models.end, max_accel) - models.begin
+        // Current_model = find(models.begin, models.end, max_accel) - models.begin
 
         // clip velocity
         n.getParam("speed_clip_diff", speed_clip_diff);
@@ -345,7 +345,7 @@ public:
 
     void update_pose(const ros::TimerEvent&) {
         // simulate P controller 
-        compute_accel(desired_speed, max_accel);
+        compute_accel(desired_speed);
         double actual_ang = 0.0;
         if (steering_buffer.size() < buffer_length) {
             steering_buffer.push_back(desired_steer_ang);
@@ -537,16 +537,14 @@ public:
         return steer_vel;
     }
 
-    void compute_accel(double desired_velocity, double& maxx_accel) {
+    void compute_accel(double desired_velocity) {
         // get difference between current and desired
         double dif = (desired_velocity - state.velocity);
-        if (state.velocity > 1.5){
-            maxx_accel = 7.51;
-        }
+        max_accellll = -7.51;
         if (state.velocity > 0) {
             if (dif > 0) {
                 // accelerate
-                double kp = 2.0 * max_accel / max_speed; //2.0
+                double kp = 2.0 * max_accellll / max_speed; //2.0
                 set_accel(kp * dif);
             } else {
                 // brake

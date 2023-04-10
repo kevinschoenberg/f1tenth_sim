@@ -70,4 +70,18 @@ do
     done
     ((vel_counter++))
 done
+# Specify the path to the folder you want to delete
+cd ~/catkin_ws/
+# folder_path="~/catkin_ws/build"
+# Delete the folder and its contents
+echo deleting build folder
+# rm -rf "$folder_path"
+rm -rf build
+# Specify the path to the folder you want to delete
+# folder_path="~/catkin_ws/devel"
+# Delete the folder and its contents
+echo deleting devel folder
+# rm -rf "$folder_path"
+rm -rf devel
+
 echo All done
