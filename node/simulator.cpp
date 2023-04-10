@@ -335,6 +335,7 @@ public:
                 if(state.velocity - expected_velocity >= 0.1){ //diff
                     int action = -1*sign(slip_ratio); //Action
                     chance_model(action);
+                    expected_velocity = state.velocity;
                 }
                 else{
                     return;
