@@ -344,9 +344,6 @@ public:
     }*/
 
     void update_pose(const ros::TimerEvent&) {
-        if (state.velocity > 2.5){
-            max_accel = 7.51;
-        }
         // simulate P controller 
         compute_accel(desired_speed);
         double actual_ang = 0.0;
@@ -543,7 +540,9 @@ public:
     void compute_accel(double desired_velocity) {
         // get difference between current and desired
         double dif = (desired_velocity - state.velocity);
-
+        if (state.velocity > 1.5){
+            max_accel = 7.51;
+        }
         if (state.velocity > 0) {
             if (dif > 0) {
                 // accelerate
