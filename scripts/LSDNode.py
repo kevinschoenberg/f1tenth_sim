@@ -53,7 +53,7 @@ def drive_ack_pub(speed):
 
 def set_initial_pose():
 	pose = PoseStamped()
-	pose.pose.position.x = -50.0 #-47
+	pose.pose.position.x = -20.0 #-47
 	pose.pose.position.y = 30.0
 	pose_pub.publish(pose)
     
