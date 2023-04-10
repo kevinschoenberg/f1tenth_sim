@@ -126,6 +126,14 @@ private:
     int buffer_length;
     std::vector<double> steering_buffer;
 
+    // data collected vores kode
+    int data_buffer_lenght;
+    std::vector<double> data_buffer;
+    std::vector<double> models = {1.11,1.25, 1.43, 1.67, 2.0, 2.5, 3.33, 5.0, 7.51, 7.51};
+    int min_model = 0;
+    int max_model = models.size;
+    int Initialize_model;
+    int Current_model;
 
 public:
 
@@ -185,6 +193,9 @@ public:
         n.getParam("moment_inertia", params.I_z);
         n.getParam("mass", params.mass);
         n.getParam("width", width);
+
+        // model vores kode
+        Current_model = find(models.begin, models.end, max_accel) - models.begin
 
         // clip velocity
         n.getParam("speed_clip_diff", speed_clip_diff);
@@ -303,9 +314,40 @@ public:
         ROS_INFO("Simulator constructed.");
     }
 
-    void update_pose(const ros::TimerEvent&) {
+    // Vores kode
+    /*
+     void action_raise(){
+        state.velocity
+        data_buffer
+    }*/
+    // - beregnes med en tick bagud.
+    // Beregn expected 
+    // Beregn slip_ratio 
+    // Beregn difff 
+    // insert into a data_buffer liste af gemte data.
+    // Step 1 lav en liste undervejs, der indeholder prev 10 samples . push og pop_back
+    // Publish model change topic, som logger læser på og skifter model anvendt ved call_back til logging
+    
+    // df['slip_ratio'] = np.where(df.speed == 0.0, 0.0, (df.expected_vel-df.speed) / df.speed)
+    // df['model_active'] = np.where(np.abs(df.speed - df.desired_velocity) <= 0.1, 0.0, .2)
+    // df['flag'] = np.where(np.abs(df.slip_ratio) <= 0.15, 0.0, .4)
+    // df['difff'] = np.where(np.abs(df.speed - df.expected_vel) <= 0.1, 0.0, .6)
+    // df['action'] = np.where(df.flag + df.difff == 1., 1.0 * (-1) * np.sign(df.slip_ratio), 0.0)
 
-        // simulate P controller
+    // l = -1 or 1
+    /*
+    void chance_model(int l){
+        if(Current_model + l <= max_model and Current_model + l >= min_model){
+            Current_model = Initialize_model + l;
+            max_accel = models[Current_model];
+        }
+    }*/
+
+    void update_pose(const ros::TimerEvent&) {
+        if (state.velocity > 2.5){
+            max_accel = 7.51;
+        }
+        // simulate P controller 
         compute_accel(desired_speed);
         double actual_ang = 0.0;
         if (steering_buffer.size() < buffer_length) {

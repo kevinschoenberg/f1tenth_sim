@@ -76,6 +76,11 @@ def save_drive_call_back(data):
 	global desired_velocity
 	desired_velocity = data.drive.speed
 
+# Saving model data from mode_change.
+#def save_drive_call_back(data):
+#	global desired_velocity
+#	desired_velocity = data.drive.speed
+
 def save_log():
 	global desired_velocity, doLog, file, simStart, data_stream
 	simStart = time.time()
