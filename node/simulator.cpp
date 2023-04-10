@@ -345,7 +345,7 @@ public:
 
     void update_pose(const ros::TimerEvent&) {
         // simulate P controller 
-        compute_accel(desired_speed);
+        compute_accel(desired_speed, max_accel);
         double actual_ang = 0.0;
         if (steering_buffer.size() < buffer_length) {
             steering_buffer.push_back(desired_steer_ang);
@@ -537,11 +537,11 @@ public:
         return steer_vel;
     }
 
-    void compute_accel(double desired_velocity) {
+    void compute_accel(double desired_velocity, double& maxx_accel) {
         // get difference between current and desired
         double dif = (desired_velocity - state.velocity);
         if (state.velocity > 1.5){
-            max_accel = 0.0;
+            maxx_accel = 7.51;
         }
         if (state.velocity > 0) {
             if (dif > 0) {
