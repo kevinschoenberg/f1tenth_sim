@@ -541,7 +541,7 @@ public:
         // get difference between current and desired
         double dif = (desired_velocity - state.velocity);
         if (state.velocity > 1.5){
-            max_accel = 7.51;
+            max_accel = 0.0;
         }
         if (state.velocity > 0) {
             if (dif > 0) {
