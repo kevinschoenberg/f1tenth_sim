@@ -12,6 +12,9 @@
 #include <sensor_msgs/Imu.h>
 #include <std_msgs/Int32MultiArray.h>
 
+
+#include "std_msgs/String.h"
+
 #include <sensor_msgs/LaserScan.h>
 #include <geometry_msgs/PoseWithCovarianceStamped.h>
 #include <geometry_msgs/PoseStamped.h>
@@ -129,14 +132,14 @@ private:
     // data collected vores kode
     int reading_buffer_lenght = 10;
     std::vector<double> readings_;
-    std::vector<double> models = {1.11,1.25, 1.43, 1.67, 2.0, 2.5, 3.33, 5.0, 7.51, 7.51};
+    std::vector<double> models = {1.11, 1.25, 1.43, 1.67, 2.0, 2.5, 3.33, 5.0, 7.51, 7.51};
     int min_model = 0;
     int max_model = models.size();
     int Initialize_model;
-    int Current_model;
+    int Current_model = -1;
+    ros::Publisher event_pub;
 
 public:
-    double max_accellll;
     RacecarSimulator(): im_server("racecar_sim") {
         // Initialize the node handle
         n = ros::NodeHandle("~");
@@ -193,9 +196,7 @@ public:
         n.getParam("moment_inertia", params.I_z);
         n.getParam("mass", params.mass);
         n.getParam("width", width);
-        max_accellll = max_accel;
-        // model vores kode
-        // Current_model = find(models.begin, models.end, max_accel) - models.begin
+
 
         // clip velocity
         n.getParam("speed_clip_diff", speed_clip_diff);
@@ -243,6 +244,13 @@ public:
 
         // obstacle subscriber
         obs_sub = n.subscribe("/clicked_point", 1, &RacecarSimulator::obs_callback, this);
+
+
+        //Vores
+        event_pub = n.advertise<std_msgs::String>("/event_topic", 10);       
+        
+        Current_model = std::distance(models.begin(), std::find(models.begin(), models.end(), max_accel)); 
+        
 
         // get collision safety margin
         n.getParam("coll_threshold", thresh);
@@ -330,9 +338,15 @@ public:
     }
 
     void tcs(){
-        if(state.velocity - desired_speed >= 0.1){ //Model active
+        //Current_model = std::find(models.begin, models.end, max_accel) - models.begin;
+        
+        std_msgs::String msg;
+        msg.data = std::to_string(Current_model);
+        event_pub.publish(msg);
+
+        if(std::abs(state.velocity - desired_speed) >= 0.1){ //Model active
             if(std::abs(slip_ratio) > 0.15){ //Flag
-                if(state.velocity - expected_velocity >= 0.1){ //diff
+                if(std::abs(state.velocity - expected_velocity) >= 0.1){ //diff
                     int action = -1*sign(slip_ratio); //Action
                     chance_model(action);
                     expected_velocity = state.velocity;
@@ -381,6 +395,7 @@ public:
             max_accel = models[Current_model];
         }
     }
+
     // Our code --------------------
     /*
     void AddReading(double reading) {

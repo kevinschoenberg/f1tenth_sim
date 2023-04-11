@@ -3,7 +3,7 @@
 import rospy
 
 import numpy as np
-from std_msgs.msg import String
+from std_msgs.msg import String, Int32
 from sensor_msgs.msg import LaserScan
 from nav_msgs.msg import Odometry
 from geometry_msgs.msg import Twist
@@ -33,6 +33,7 @@ a_max = yamldata['max_accel']
 filey.close()
 file = None
 desired_velocity = 0.0 # Start desire velocity
+current_model = -1
 # body of destructor
 # file.close()
 
@@ -43,7 +44,7 @@ def key_pressed_call_back(data):
 		doLog = False
 		#open file
 		file = open(home +'/catkin_ws/src/f1tenth_sim/test_results/longitude-'+ str(gmtime()[1:6]) +'.csv', 'w')
-		header = ['x', 'y', 'yaw', 'speed', 'a_max', 'time', 'mu', 'desired_velocity']
+		header = ['x', 'y', 'yaw', 'speed', 'a_max', 'time', 'mu', 'desired_velocity', 'current_model']
 		writer = csv.writer(file)
 		writer.writerow(header)
 
@@ -77,9 +78,10 @@ def save_drive_call_back(data):
 	desired_velocity = data.drive.speed
 
 # Saving model data from mode_change.
-#def save_drive_call_back(data):
-#	global desired_velocity
-#	desired_velocity = data.drive.speed
+def event_callback(data):
+	global current_model
+	print(data.data)
+	current_model = data.data
 
 def save_log():
 	global desired_velocity, doLog, file, simStart, data_stream
@@ -90,7 +92,7 @@ def save_log():
 	lastdatareading = None
 	while doLog:
 		sim_time = data_stream.header.stamp.to_sec()
-		print(sim_time)
+		#print(sim_time)
 		if simStart + 20 < sim_time: #time.time()
 			print("Time taken for experiment", sim_time-simStart) ##time.time()
 			doLog = False
@@ -113,11 +115,15 @@ def save_log():
 			#									speed,desired_velocity)
 			#if (speed != 0.0):
 			#	desired_velocity = desired_velocity_yaml
-			file.write('%f, %f, %f, %f, %f, %f, %f, %f\n' % (data_stream.pose.pose.position.x,
+			file.write('%f, %f, %f, %f, %f, %f, %f, %f, %s\n' % (data_stream.pose.pose.position.x,
 												data_stream.pose.pose.position.y,
 												euler[2],
-												speed,a_max, 
-												sim_time,mu,desired_velocity))
+												speed,
+												a_max, 
+												sim_time,
+												mu,
+												desired_velocity,
+												current_model))
 			#if (lastdatareading == None or desired_velocity == 0.0): #or lastdatareading != newdatareading
 			#	file.write('%f, %f, %f, %f, %f, %f, %f\n' % (data_stream.pose.pose.position.x,
 			#									data_stream.pose.pose.position.y,
@@ -134,6 +140,8 @@ keysub = rospy.Subscriber('/key', String, key_pressed_call_back, queue_size=10)
 
     # Subsriber to drive
 drive = rospy.Subscriber('/lsdnode_drive', AckermannDriveStamped, save_drive_call_back, queue_size=10)
+
+event_sub = rospy.Subscriber('/event_topic', String, event_callback, queue_size=10)
 
 def main(args=None):
     rospy.init_node('LoggerNode')
