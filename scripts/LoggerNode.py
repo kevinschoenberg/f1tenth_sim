@@ -115,7 +115,7 @@ def save_log():
 			#									speed,desired_velocity)
 			#if (speed != 0.0):
 			#	desired_velocity = desired_velocity_yaml
-			file.write('%f, %f, %f, %f, %f, %f, %f, %f, %s\n' % (data_stream.pose.pose.position.x,
+			file.write('%f, %f, %f, %f, %f, %f, %f, %f, %f\n' % (data_stream.pose.pose.position.x,
 												data_stream.pose.pose.position.y,
 												euler[2],
 												speed,
@@ -123,7 +123,7 @@ def save_log():
 												sim_time,
 												mu,
 												desired_velocity,
-												current_model))
+												int(current_model)))
 			#if (lastdatareading == None or desired_velocity == 0.0): #or lastdatareading != newdatareading
 			#	file.write('%f, %f, %f, %f, %f, %f, %f\n' % (data_stream.pose.pose.position.x,
 			#									data_stream.pose.pose.position.y,

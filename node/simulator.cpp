@@ -344,9 +344,9 @@ public:
         msg.data = std::to_string(Current_model);
         event_pub.publish(msg);
 
-        if(std::abs(state.velocity - desired_speed) >= 0.1){ //Model active
+        if(std::abs(state.velocity - desired_speed) > 0.1){ //Model active
             if(std::abs(slip_ratio) > 0.15){ //Flag
-                if(std::abs(state.velocity - expected_velocity) >= 0.1){ //diff
+                if(std::abs(state.velocity - expected_velocity) > 0.1){ //diff
                     int action = -1*sign(slip_ratio); //Action
                     chance_model(action);
                     expected_velocity = state.velocity;
