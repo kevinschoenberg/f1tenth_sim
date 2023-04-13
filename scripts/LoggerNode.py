@@ -17,6 +17,10 @@ import time
 from threading import Thread, Event, enumerate, current_thread
 import yaml
 from ackermann_msgs.msg import AckermannDriveStamped, AckermannDrive
+
+import ast
+
+
 home = expanduser('~')
 
 	#file = open(strftime(home+'/sim_ws/our_test_logs/wp-%Y-%m-%d-%H-%M-%S',gmtime())+'.csv', 'w')
@@ -34,6 +38,7 @@ filey.close()
 file = None
 desired_velocity = 0.0 # Start desire velocity
 current_model = 4
+expected_velocity = 0.0
 # body of destructor
 # file.close()
 
@@ -44,7 +49,7 @@ def key_pressed_call_back(data):
 		doLog = False
 		#open file
 		file = open(home +'/catkin_ws/src/f1tenth_sim/test_results/longitude-'+ str(gmtime()[1:6]) +'.csv', 'w')
-		header = ['x', 'y', 'yaw', 'speed', 'a_max', 'time', 'mu', 'desired_velocity', 'current_model']
+		header = ['x', 'y', 'yaw', 'speed', 'a_max', 'time', 'mu', 'desired_velocity', 'current_model', 'expected_velocity']
 		writer = csv.writer(file)
 		writer.writerow(header)
 
@@ -79,9 +84,11 @@ def save_drive_call_back(data):
 
 # Saving model data from mode_change.
 def event_callback(data):
-	global current_model
+	global current_model, expected_velocity
 	print(data.data)
-	current_model = data.data
+	my_dict = ast.literal_eval(data.data)
+	current_model = my_dict['Current_model']
+	expected_velocity = my_dict['expected_velocity']
 
 def save_log():
 	global desired_velocity, doLog, file, simStart, data_stream
@@ -115,7 +122,7 @@ def save_log():
 			#									speed,desired_velocity)
 			#if (speed != 0.0):
 			#	desired_velocity = desired_velocity_yaml
-			file.write('%f, %f, %f, %f, %f, %f, %f, %f, %f\n' % (data_stream.pose.pose.position.x,
+			file.write('%f, %f, %f, %f, %f, %f, %f, %f, %f, %f\n' % (data_stream.pose.pose.position.x,
 												data_stream.pose.pose.position.y,
 												euler[2],
 												speed,
@@ -123,7 +130,8 @@ def save_log():
 												sim_time,
 												mu,
 												desired_velocity,
-												int(current_model)))
+												int(current_model),
+												expected_velocity))
 			#if (lastdatareading == None or desired_velocity == 0.0): #or lastdatareading != newdatareading
 			#	file.write('%f, %f, %f, %f, %f, %f, %f\n' % (data_stream.pose.pose.position.x,
 			#									data_stream.pose.pose.position.y,

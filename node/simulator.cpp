@@ -339,10 +339,8 @@ public:
     }
 
     void tcs(){
-        //Current_model = std::find(models.begin, models.end, max_accel) - models.begin;
-        
         std_msgs::String msg;
-        msg.data = std::to_string(Current_model);
+        msg.data = "{'Current_model':" + std::to_string(Current_model) + ",'expected_velocity':" + std::to_string(expected_velocity) + "}";
         event_pub.publish(msg);
 
         if(std::abs(state.velocity - desired_speed) > 0.1){ //Model active
