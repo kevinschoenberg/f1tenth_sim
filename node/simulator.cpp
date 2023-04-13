@@ -323,9 +323,10 @@ public:
     // Vores kode
     double expected_velocity = 0.0;
     double slip_ratio;
+
     double calc_expected_velocity(double dt){
         double dif = (desired_speed - state.velocity);
-        double expected_accel = dif * (2.0 * max_accel / max_speed) * 0.3;
+        double expected_accel = dif * (4.0 * max_accel / max_speed) * 0.3;
 
         return expected_accel*dt + expected_velocity;
     }
