@@ -33,7 +33,7 @@ a_max = yamldata['max_accel']
 filey.close()
 file = None
 desired_velocity = 0.0 # Start desire velocity
-current_model = -1
+current_model = 4
 # body of destructor
 # file.close()
 

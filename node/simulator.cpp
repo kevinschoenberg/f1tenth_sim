@@ -135,8 +135,7 @@ private:
     std::vector<double> models = {1.11, 1.25, 1.43, 1.67, 2.0, 2.5, 3.33, 5.0, 7.51, 7.51};
     int min_model = 0;
     int max_model = models.size();
-    int Initialize_model;
-    int Current_model = -1;
+    int Current_model;
     ros::Publisher event_pub;
 
 public:
@@ -250,7 +249,6 @@ public:
         event_pub = n.advertise<std_msgs::String>("/event_topic", 10);       
         
         Current_model = std::distance(models.begin(), std::find(models.begin(), models.end(), max_accel)); 
-        
 
         // get collision safety margin
         n.getParam("coll_threshold", thresh);
@@ -349,7 +347,7 @@ public:
 
         if(std::abs(state.velocity - desired_speed) > 0.1){ //Model active
             if(std::abs(slip_ratio) > 0.15){ //Flag
-                if(std::abs(state.velocity - expected_velocity) > 0.1){ //diff
+                if(std::abs(state.velocity - expected_velocity) > 0.2){ //diff
                     int action = -1*sign(slip_ratio); //Action
                     chance_model(action);
                     expected_velocity = state.velocity;
@@ -393,8 +391,8 @@ public:
 
     // l = -1 or 1
     void chance_model(int l){
-        if(Current_model + l <= max_model and Current_model + l >= min_model){
-            Current_model = Initialize_model + l;
+        if(Current_model + l <= max_model && Current_model + l >= min_model){
+            Current_model = Current_model + l;
             max_accel = models[Current_model];
         }
     }
