@@ -324,15 +324,18 @@ public:
     double expected_velocity = 0.0;
     double slip_ratio;
     double prev_expected_velocity_calc = ros::Time::now().toSec();
-    
+    double expdif_test;
+
     double calc_expected_velocity(){
         ros::Time timestamp = ros::Time::now();
         double current_seconds = timestamp.toSec();
         double dif = (desired_speed - expected_velocity);
-        double expected_accel = std::min(std::max((2.0 * max_accel / max_speed) * dif , -max_accel), max_accel) * 0.3;
+        
+        double expected_accel = std::min(std::max((2.0 * max_accel / max_speed) * dif * 0.3 , -max_accel* 0.3), max_accel* 0.3);
         
         double dt = current_seconds - prev_expected_velocity_calc;
         prev_expected_velocity_calc = current_seconds;
+        expdif_test = dif;
         return expected_accel*dt + expected_velocity;
     }
 
@@ -445,7 +448,8 @@ public:
             params,
             current_seconds - previous_seconds);
         std_msgs::String msg;
-        msg.data = "{'Current_model':" + std::to_string(Current_model) + ",'expected_velocity':" + std::to_string(expected_velocity) + "}";
+        msg.data = "{'Current_model':" + std::to_string(Current_model) + ",'expected_velocity':" + std::to_string(expected_velocity) +
+         ",'test_dif':" + std::to_string(test_dif-expdif_test) + ", 'expdif':" + std::to_string(expdif_test)+"}";
         event_pub.publish(msg);
         state.velocity = std::min(std::max(state.velocity, -max_speed), max_speed);
         state.steer_angle = std::min(std::max(state.steer_angle, -max_steering_angle), max_steering_angle);
@@ -617,11 +621,11 @@ public:
 
         return steer_vel;
     }
-
+    double test_dif = 0.0;
     void compute_accel(double desired_velocity) {
         // get difference between current and desired
         double dif = (desired_velocity - state.velocity);
-
+        test_dif = dif;
         if (state.velocity > 0) {
             if (dif > 0) {
                 // accelerate
