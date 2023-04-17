@@ -421,6 +421,9 @@ public:
         // simulate P controller
 
         compute_accel(desired_speed);
+        expected_velocity = calc_expected_velocity();
+        slip_ratio = calc_slip_ratio(); 
+        tcs();
         double actual_ang = 0.0;
         if (steering_buffer.size() < buffer_length) {
             steering_buffer.push_back(desired_steer_ang);
@@ -446,10 +449,6 @@ public:
         event_pub.publish(msg);
         state.velocity = std::min(std::max(state.velocity, -max_speed), max_speed);
         state.steer_angle = std::min(std::max(state.steer_angle, -max_steering_angle), max_steering_angle);
-        
-        expected_velocity = calc_expected_velocity();
-        slip_ratio = calc_slip_ratio(); 
-        tcs();
 
         previous_seconds = current_seconds;
 
