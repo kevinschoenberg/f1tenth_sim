@@ -6,7 +6,7 @@ vel_counter=1
 start_vel=7.
 vel_step_size=0.
 coeff_step_size=0.1
-coeff_step_start=0.2
+coeff_step_start=0.8
 while [ $vel_counter -le 1 ]
 do
     cd
