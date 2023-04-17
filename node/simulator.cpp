@@ -326,9 +326,11 @@ public:
 
     double calc_expected_velocity(double dt){
         double dif = (desired_speed - expected_velocity);
-        double expected_accel = dif * (2.0 * max_accel / max_speed) * 0.3;
+        double expected_accel = dif * (2.0 * max_accel / max_speed);
 
-        return expected_accel*dt + expected_velocity;
+        expected_accel = std::min(std::max(expected_accel, -max_accel), max_accel);
+
+        return expected_accel*dt*0.3 + expected_velocity;
     }
 
     double calc_slip_ratio(){
