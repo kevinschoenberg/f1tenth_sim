@@ -323,11 +323,16 @@ public:
     // Vores kode
     double expected_velocity = 0.0;
     double slip_ratio;
-
-    double calc_expected_velocity(double dt){
+    double prev_expected_velocity_calc = ros::Time::now().toSec();
+    
+    double calc_expected_velocity(){
+        ros::Time timestamp = ros::Time::now();
+        double current_seconds = timestamp.toSec();
         double dif = (desired_speed - expected_velocity);
-        double expected_accel = dif * (2.0 * max_accel / max_speed) * 0.3;
-
+        double expected_accel = std::min(std::max((2.0 * max_accel / max_speed) * dif , -max_accel), max_accel) * 0.3;
+        
+        double dt = current_seconds - prev_expected_velocity_calc;
+        prev_expected_velocity_calc = current_seconds;
         return expected_accel*dt + expected_velocity;
     }
 
@@ -340,9 +345,6 @@ public:
     }
 
     void tcs(){
-        std_msgs::String msg;
-        msg.data = "{'Current_model':" + std::to_string(Current_model) + ",'expected_velocity':" + std::to_string(expected_velocity) + "}";
-        event_pub.publish(msg);
 
         if(std::abs(state.velocity - desired_speed) > 0.1){ //Model active
             if(std::abs(slip_ratio) > 0.15){ //Flag
@@ -438,11 +440,13 @@ public:
             steer_angle_vel,
             params,
             current_seconds - previous_seconds);
+        std_msgs::String msg;
+        msg.data = "{'Current_model':" + std::to_string(Current_model) + ",'expected_velocity':" + std::to_string(expected_velocity) + "}";
+        event_pub.publish(msg);
         state.velocity = std::min(std::max(state.velocity, -max_speed), max_speed);
         state.steer_angle = std::min(std::max(state.steer_angle, -max_steering_angle), max_steering_angle);
-
-        double dt = current_seconds - previous_seconds; //delta time
-        expected_velocity = calc_expected_velocity(dt);
+        
+        expected_velocity = calc_expected_velocity();
         slip_ratio = calc_slip_ratio(); 
         tcs();
 
