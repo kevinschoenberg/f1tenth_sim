@@ -374,6 +374,7 @@ public:
             return -1;
         }
     }
+
     // - beregnes med en tick bagud.
     // Beregn expected 
         // acceleration

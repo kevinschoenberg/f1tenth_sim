@@ -3,7 +3,7 @@
 declare -A List_acc
 List_acc=(['.1']=1.11 [.2]=1.25 [.3]=1.43 [.4]=1.67 ['.5']=2.0 [.6]=2.5 [.7]=3.33 [.8]=5.0 [.9]=7.51 [1.0]=7.51)
 vel_counter=1
-start_vel=5.
+start_vel=7.
 vel_step_size=0.
 coeff_step_size=0.1
 coeff_step_start=0.5
