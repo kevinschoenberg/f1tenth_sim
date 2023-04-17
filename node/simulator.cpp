@@ -326,7 +326,7 @@ public:
 
     double calc_expected_velocity(double dt){
         double dif = (desired_speed - expected_velocity);
-        double expected_accel = dif * (2.0 * max_accel / max_speed);
+        double expected_accel = dif * (4.0 * max_accel / max_speed);
 
         expected_accel = std::min(std::max(expected_accel, -max_accel), max_accel);
 
@@ -374,7 +374,7 @@ public:
             return -1;
         }
     }
-    
+
     // - beregnes med en tick bagud.
     // Beregn expected 
         // acceleration
