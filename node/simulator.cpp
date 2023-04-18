@@ -132,7 +132,8 @@ private:
     // data collected vores kode
     int reading_buffer_lenght = 10;
     std::vector<double> readings_;
-    std::vector<double> models = {1.11, 1.25, 1.43, 1.67, 2.0, 2.5, 3.33, 5.0, 7.51, 7.51};
+    std::vector<double> models = {1.11, 1.25, 1.43, 1.67, 2.0, 2.5, 3.33, 5.0, 7.50, 7.51};
+    std::vector<double> models_mult = {0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.38, 0.81};
     int min_model = 0;
     int max_model = models.size();
     int Current_model;
@@ -329,8 +330,8 @@ public:
         ros::Time timestamp = ros::Time::now();
         double current_seconds = timestamp.toSec();
         double dif = (desired_speed - expected_velocity);
-        
-        double expected_accel = std::min(std::max((4.0 * max_accel / max_speed) * dif * 0.3 , -max_accel* 0.3), max_accel* 0.3);
+        // max_accel is defined for each friction of coefficient, most of them is 0.3 .
+        double expected_accel = std::min(std::max((4.0 * max_accel / max_speed) * dif * models_mult[Current_model] , -max_accel* models_mult[Current_model]), max_accel* models_mult[Current_model]);
         
         double dt = current_seconds - prev_expected_velocity_calc;
         prev_expected_velocity_calc = current_seconds;

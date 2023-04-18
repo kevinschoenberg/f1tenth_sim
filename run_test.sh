@@ -1,12 +1,12 @@
 #! /bin/bash
 
 declare -A List_acc
-List_acc=(['.1']=1.11 [.2]=1.25 [.3]=1.43 [.4]=1.67 ['.5']=2.0 [.6]=2.5 [.7]=3.33 [.8]=5.0 [.9]=7.51 [1.0]=7.51)
+List_acc=(['.1']=1.11 [.2]=1.25 [.3]=1.43 [.4]=1.67 ['.5']=2.0 [.6]=2.5 [.7]=3.33 [.8]=5.0 [.9]=7.50 [1.0]=7.51)
 vel_counter=1
 start_vel=7.
 vel_step_size=0.
 coeff_step_size=0.1
-coeff_step_start=0.5
+coeff_step_start=0.1
 while [ $vel_counter -le 1 ]
 do
     cd
@@ -19,7 +19,7 @@ do
 
     sleep 1
     counter=1
-    while [ $counter -le 1 ]
+    while [ $counter -le 10 ]
     do
         cd
         cd ~/catkin_ws/src/f1tenth_sim
@@ -33,7 +33,7 @@ do
         #new_a_max=${List_acc[$new_coeff]}
 
         #Use one model for all surfaces
-        new_a_max=${List_acc['.2']}
+        new_a_max=${List_acc['1.0']}
 
         #printf '${List_acc[%s]}=%s\n' "${new_coeff}" "$new_a_max"
         sed -i "s/\bmax_accel\b:.*/max_accel: $new_a_max/" params.yaml
