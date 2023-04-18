@@ -33,7 +33,7 @@ do
         #new_a_max=${List_acc[$new_coeff]}
 
         #Use one model for all surfaces
-        new_a_max=${List_acc['1.0']}
+        new_a_max=${List_acc['.3']}
 
         #printf '${List_acc[%s]}=%s\n' "${new_coeff}" "$new_a_max"
         sed -i "s/\bmax_accel\b:.*/max_accel: $new_a_max/" params.yaml
