@@ -6,7 +6,7 @@ vel_counter=1
 start_vel=7.
 vel_step_size=0.
 coeff_step_size=0.1
-coeff_step_start=0.2
+coeff_step_start=0.5
 while [ $vel_counter -le 1 ]
 do
     cd
@@ -33,7 +33,7 @@ do
         #new_a_max=${List_acc[$new_coeff]}
 
         #Use one model for all surfaces
-        new_a_max=${List_acc['.5']}
+        new_a_max=${List_acc['.2']}
 
         #printf '${List_acc[%s]}=%s\n' "${new_coeff}" "$new_a_max"
         sed -i "s/\bmax_accel\b:.*/max_accel: $new_a_max/" params.yaml

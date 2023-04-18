@@ -348,7 +348,7 @@ public:
     void tcs(){
 
         if(std::abs(state.velocity - desired_speed) > 0.1){ //Model active
-            if(std::abs(slip_ratio) > 0.15){ //Flag
+            if(std::abs(slip_ratio) > 0.1){ //Flag 0.15
                 if(std::abs(state.velocity - expected_velocity) > 0.2){ //diff
                     int action = -1*sign(slip_ratio); //Action
                     chance_model(action);
