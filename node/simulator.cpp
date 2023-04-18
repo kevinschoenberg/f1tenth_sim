@@ -331,7 +331,7 @@ public:
         double current_seconds = timestamp.toSec();
         double dif = (desired_speed - expected_velocity);
         
-        double expected_accel = std::min(std::max((2.0 * max_accel / max_speed) * dif * 0.3 , -max_accel* 0.3), max_accel* 0.3);
+        double expected_accel = std::min(std::max((4.0 * max_accel / max_speed) * dif * 0.3 , -max_accel* 0.3), max_accel* 0.3);
         
         double dt = current_seconds - prev_expected_velocity_calc;
         prev_expected_velocity_calc = current_seconds;
@@ -346,9 +346,9 @@ public:
         double dif = (expected_velocity - state.velocity);
         return dif/state.velocity;
     }
-
+    //int Model_active = 0;
     void tcs(){
-
+        
         if(std::abs(state.velocity - desired_speed) > 0.1){ //Model active
             if(std::abs(slip_ratio) > 0.15){ //Flag
                 if(std::abs(state.velocity - expected_velocity) > 0.2){ //diff
@@ -426,7 +426,7 @@ public:
         compute_accel(desired_speed);
         expected_velocity = calc_expected_velocity();
         slip_ratio = calc_slip_ratio(); 
-        //tcs();
+        tcs();
         double actual_ang = 0.0;
         if (steering_buffer.size() < buffer_length) {
             steering_buffer.push_back(desired_steer_ang);
@@ -449,7 +449,7 @@ public:
             current_seconds - previous_seconds);
         std_msgs::String msg;
         msg.data = "{'Current_model':" + std::to_string(Current_model) + ",'expected_velocity':" + std::to_string(expected_velocity) +
-         ",'test_dif':" + std::to_string(test_dif-expdif_test) + ", 'expdif':" + std::to_string(expdif_test)+"}";
+        ", 'tcs':" + "active"+"}";
         event_pub.publish(msg);
         state.velocity = std::min(std::max(state.velocity, -max_speed), max_speed);
         state.steer_angle = std::min(std::max(state.steer_angle, -max_steering_angle), max_steering_angle);
