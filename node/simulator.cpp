@@ -321,10 +321,11 @@ public:
         ROS_INFO("Simulator constructed.");
     }
 
-    // Vores kode
+    // Our code --------------------
     double expected_velocity = 0.0;
     double slip_ratio;
     double prev_expected_velocity_calc = ros::Time::now().toSec();
+    int model_active, vel_diff, flag, action;
 
     double calc_expected_velocity(){
         ros::Time timestamp = ros::Time::now();
@@ -345,26 +346,34 @@ public:
         double dif = (expected_velocity - state.velocity);
         return dif/state.velocity;
     }
-    //int Model_active = 0;
-    void tcs(){
 
-        if(std::abs(state.velocity - desired_speed) > 0.1){ //Model active
-            if(std::abs(slip_ratio) > 0.1){ //Flag 0.15
-                if(std::abs(state.velocity - expected_velocity) > 0.2){ //diff
-                    int action = -1*sign(slip_ratio); //Action
-                    chance_model(action);
-                    expected_velocity = state.velocity;
-                }
-                else{
-                    return;
-                }
+    void tcs(){
+        model_active = 0;
+        vel_diff = 0;
+        flag = 0;
+        action = 0;
+
+        //model active
+        if(std::abs(state.velocity - desired_speed) > 0.1){
+            model_active = 1;
+
+            //flag
+            if(std::abs(slip_ratio) > 0.15){ 
+                flag = 1;
             }
-            else{
-                return;
+
+            //vel_diff
+            if(std::abs(state.velocity - expected_velocity) > 0.2){
+                vel_diff = 1;
             }
-        }
-        else{
-            return;
+
+            //action
+            if(flag == 1 and vel_diff == 1)
+            {
+                action = -1*sign(slip_ratio);
+                chance_model(action);
+                expected_velocity = state.velocity;
+            }
         }
     }
 
@@ -377,22 +386,6 @@ public:
         }
     }
 
-    // - beregnes med en tick bagud.
-    // Beregn expected 
-        // acceleration
-        // velocity 
-    // Beregn slip_ratio 
-    // Beregn difff 
-    // insert into a data_buffer liste af gemte data.
-    // Step 1 lav en liste undervejs, der indeholder prev 10 samples. push og pop_back
-    // Publish model change topic, som logger læser på og skifter model anvendt ved call_back til logging
-    
-    // df['slip_ratio'] = np.where(df.speed == 0.0, 0.0, (df.expected_vel-df.speed) / df.speed)
-    // df['model_active'] = np.where(np.abs(df.speed - df.desired_velocity) <= 0.1, 0.0, .2)
-    // df['flag'] = np.where(np.abs(df.slip_ratio) <= 0.15, 0.0, .4)
-    // df['difff'] = np.where(np.abs(df.speed - df.expected_vel) <= 0.1, 0.0, .6)
-    // df['action'] = np.where(df.flag + df.difff == 1., 1.0 * (-1) * np.sign(df.slip_ratio), 0.0)
-
     // l = -1 or 1
     void chance_model(int l){
         if(Current_model + l <= max_model && Current_model + l >= min_model){
@@ -401,7 +394,7 @@ public:
         }
     }
 
-    // Our code --------------------
+
     /*
     void AddReading(double reading) {
         readings_.pushback(reading);
@@ -422,10 +415,13 @@ public:
     void update_pose(const ros::TimerEvent&) {
         // simulate P controller
 
+        //Our model
         compute_accel(desired_speed);
         expected_velocity = calc_expected_velocity();
         slip_ratio = calc_slip_ratio(); 
         tcs();
+
+
         double actual_ang = 0.0;
         if (steering_buffer.size() < buffer_length) {
             steering_buffer.push_back(desired_steer_ang);
@@ -446,9 +442,19 @@ public:
             steer_angle_vel,
             params,
             current_seconds - previous_seconds);
+
+        
+        //publish events and flags to logger
         std_msgs::String msg;
-        msg.data = "{'Current_model':" + std::to_string(Current_model) + ",'expected_velocity':" + std::to_string(expected_velocity)+"}";
+        msg.data = "{'Current_model':" + std::to_string(Current_model) 
+                + ",'expected_velocity':" + std::to_string(expected_velocity) 
+                + ",'model_active':" + std::to_string(model_active)
+                + ",'vel_diff':" + std::to_string(vel_diff)
+                + ",'flag':" + std::to_string(flag)
+                + ",'action':" + std::to_string(action)
+                +"}";
         event_pub.publish(msg);
+
         state.velocity = std::min(std::max(state.velocity, -max_speed), max_speed);
         state.steer_angle = std::min(std::max(state.steer_angle, -max_steering_angle), max_steering_angle);
 

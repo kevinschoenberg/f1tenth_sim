@@ -36,11 +36,13 @@ mu = yamldata['friction_coeff']
 a_max = yamldata['max_accel']
 filey.close()
 file = None
-desired_velocity = 0.0 # Start desire velocity
+desired_velocity = 0.0 # Start desired velocity
 current_model = 4
 expected_velocity = 0.0
-# body of destructor
-# file.close()
+model_active = 0
+vel_diff = 0
+flag = 0
+action = 0
 
 def key_pressed_call_back(data):
 	global doLog, file, simStart, data_stream
@@ -49,7 +51,7 @@ def key_pressed_call_back(data):
 		doLog = False
 		#open file
 		file = open(home +'/catkin_ws/src/f1tenth_sim/test_results/longitude-'+ str(gmtime()[1:6]) +'.csv', 'w')
-		header = ['x', 'y', 'yaw', 'speed', 'a_max', 'time', 'mu', 'desired_velocity', 'current_model', 'expected_velocity']
+		header = ['x', 'y', 'yaw', 'speed', 'a_max', 'time', 'mu', 'desired_velocity', 'current_model', 'expected_velocity', 'tcs_active', 'vel_diff', 'flag', 'action']
 		writer = csv.writer(file)
 		writer.writerow(header)
 
@@ -69,8 +71,6 @@ def key_pressed_call_back(data):
 		#rospy.on_shutdown(new.join())
 		new.join()
 		#rospy.signal_shutdown("done")
-	
-
 
 # Saving data from odom.
 def save_waypoint_call_back(data):
@@ -82,13 +82,17 @@ def save_drive_call_back(data):
 	global desired_velocity
 	desired_velocity = data.drive.speed
 
-# Saving model data from mode_change.
+# Saving model data from runtime readings and model change.
 def event_callback(data):
-	global current_model, expected_velocity
+	global current_model, expected_velocity, vel_diff, flag, action, model_active
 	print(data.data)
 	my_dict = ast.literal_eval(data.data)
 	current_model = my_dict['Current_model']
 	expected_velocity = my_dict['expected_velocity']
+	model_active = my_dict['model_active']
+	vel_diff = my_dict['vel_diff']
+	flag = my_dict['flag']
+	action = my_dict['action']
 
 def save_log():
 	global desired_velocity, doLog, file, simStart, data_stream
@@ -122,16 +126,21 @@ def save_log():
 			#									speed,desired_velocity)
 			#if (speed != 0.0):
 			#	desired_velocity = desired_velocity_yaml
-			file.write('%f, %f, %f, %f, %f, %f, %f, %f, %f, %f\n' % (data_stream.pose.pose.position.x,
-												data_stream.pose.pose.position.y,
-												euler[2],
-												speed,
-												a_max, 
-												sim_time,
-												mu,
-												desired_velocity,
-												int(current_model),
-												expected_velocity))
+			file.write('%f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f\n' % (data_stream.pose.pose.position.x,
+																					data_stream.pose.pose.position.y,
+																					euler[2],
+																					speed,
+																					a_max, 
+																					sim_time,
+																					mu,
+																					desired_velocity,
+																					int(current_model),
+																					expected_velocity,
+																					model_active,
+																					vel_diff,
+																					flag,
+																					action)
+																					)
 			#if (lastdatareading == None or desired_velocity == 0.0): #or lastdatareading != newdatareading
 			#	file.write('%f, %f, %f, %f, %f, %f, %f\n' % (data_stream.pose.pose.position.x,
 			#									data_stream.pose.pose.position.y,

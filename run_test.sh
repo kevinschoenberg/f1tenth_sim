@@ -19,7 +19,7 @@ do
 
     sleep 1
     counter=1
-    while [ $counter -le 10 ]
+    while [ $counter -le 1 ]
     do
         cd
         cd ~/catkin_ws/src/f1tenth_sim
