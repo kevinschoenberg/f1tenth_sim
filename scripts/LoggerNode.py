@@ -161,7 +161,7 @@ keysub = rospy.Subscriber('/key', String, key_pressed_call_back, queue_size=10)
     # Subsriber to drive
 drive = rospy.Subscriber('/lsdnode_drive', AckermannDriveStamped, save_drive_call_back, queue_size=10)
 
-event_sub = rospy.Subscriber('/event_topic', String, event_callback, queue_size=10)
+event_sub = rospy.Subscriber('/event_topic', String, event_callback, queue_size=500)
 
 def main(args=None):
     rospy.init_node('LoggerNode')

@@ -325,7 +325,7 @@ public:
     double expected_velocity = 0.0;
     double slip_ratio;
     double prev_expected_velocity_calc = ros::Time::now().toSec();
-    int model_active, vel_diff = 0, flag, action;
+    int model_active, vel_diff, flag, action;
 
     double calc_expected_velocity(){
         ros::Time timestamp = ros::Time::now();
@@ -459,7 +459,7 @@ public:
                 + ",'action':" + std::to_string(action)
                 +"}";
         event_pub.publish(msg);
-        //logged = true;
+        logged = true;
         state.velocity = std::min(std::max(state.velocity, -max_speed), max_speed);
         state.steer_angle = std::min(std::max(state.steer_angle, -max_steering_angle), max_steering_angle);
 
