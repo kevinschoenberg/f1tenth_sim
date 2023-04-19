@@ -52,7 +52,7 @@ def key_pressed_call_back(data):
 		doLog = False
 		#open file
 		file = open(home +'/catkin_ws/src/f1tenth_sim/test_results/longitude-'+ str(gmtime()[1:6]) +'.csv', 'w')
-		header = ['x', 'y', 'yaw', 'speed', 'a_max', 'time', 'mu', 'desired_velocity', 'current_model', 'expected_velocity', 'tcs_active', 'vel_diff', 'flag', 'action']
+		header = ['x', 'y', 'yaw', 'speed', 'a_max', 'time', 'mu', 'desired_velocity', 'current_model', 'expected_velocity', 'slip_ratio', 'tcs_active', 'vel_diff', 'flag', 'action']
 		writer = csv.writer(file)
 		writer.writerow(header)
 
