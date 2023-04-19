@@ -346,12 +346,9 @@ public:
         double dif = (expected_velocity - state.velocity);
         return dif/state.velocity;
     }
-    bool logged = true;
+
     void tcs(){
         model_active = 0;
-        if (logged){
-            vel_diff = 0;
-        }
         //vel_diff = 0;
         flag = 0;
         action = 0;
@@ -368,7 +365,6 @@ public:
             //vel_diff
             if(std::abs(state.velocity - expected_velocity) > 0.2){
                 vel_diff = 1;
-                logged = false;
             }
 
             //action
@@ -418,13 +414,11 @@ public:
 
     void update_pose(const ros::TimerEvent&) {
         // simulate P controller
-
         //Our model
         compute_accel(desired_speed);
         expected_velocity = calc_expected_velocity();
         slip_ratio = calc_slip_ratio(); 
         tcs();
-
 
         double actual_ang = 0.0;
         if (steering_buffer.size() < buffer_length) {
@@ -459,7 +453,7 @@ public:
                 + ",'action':" + std::to_string(action)
                 +"}";
         event_pub.publish(msg);
-        logged = true;
+        vel_diff = 0.0;
         state.velocity = std::min(std::max(state.velocity, -max_speed), max_speed);
         state.steer_angle = std::min(std::max(state.steer_angle, -max_steering_angle), max_steering_angle);
 
