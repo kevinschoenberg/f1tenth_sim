@@ -325,7 +325,7 @@ public:
     double expected_velocity = 0.0;
     double slip_ratio;
     double prev_expected_velocity_calc = ros::Time::now().toSec();
-    int model_active, vel_diff, flag, action;
+    int model_active, vel_diff = 0, flag, action;
 
     double calc_expected_velocity(){
         ros::Time timestamp = ros::Time::now();
@@ -346,12 +346,10 @@ public:
         double dif = (expected_velocity - state.velocity);
         return dif/state.velocity;
     }
-    int last_model = Current_model;
+    
     void tcs(){
         model_active = 0;
-        if (last_model != Current_model){
-            vel_diff = 0;
-        }
+        vel_diff = 0;
         flag = 0;
         action = 0;
 
@@ -373,7 +371,6 @@ public:
             if(flag == 1 and vel_diff == 1)
             {
                 action = -1*sign(slip_ratio);
-                last_model = Current_model;
                 chance_model(action);
                 expected_velocity = state.velocity;
             }
