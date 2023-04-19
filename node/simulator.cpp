@@ -459,7 +459,7 @@ public:
                 + ",'action':" + std::to_string(action)
                 +"}";
         event_pub.publish(msg);
-        logged = true;
+        //logged = true;
         state.velocity = std::min(std::max(state.velocity, -max_speed), max_speed);
         state.steer_angle = std::min(std::max(state.steer_angle, -max_steering_angle), max_steering_angle);
 
