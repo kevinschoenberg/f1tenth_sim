@@ -39,6 +39,7 @@ file = None
 desired_velocity = 0.0 # Start desired velocity
 current_model = 4
 expected_velocity = 0.0
+slip_ratio = 0.0
 model_active = 0
 vel_diff = 0
 flag = 0
@@ -84,11 +85,12 @@ def save_drive_call_back(data):
 
 # Saving model data from runtime readings and model change.
 def event_callback(data):
-	global current_model, expected_velocity, vel_diff, flag, action, model_active
+	global current_model, expected_velocity, slip_ratio, vel_diff, flag, action, model_active
 	print(data.data)
 	my_dict = ast.literal_eval(data.data)
 	current_model = my_dict['Current_model']
 	expected_velocity = my_dict['expected_velocity']
+	slip_ratio = my_dict['slip_ratio']
 	model_active = my_dict['model_active']
 	vel_diff = my_dict['vel_diff']
 	flag = my_dict['flag']
@@ -126,7 +128,7 @@ def save_log():
 			#									speed,desired_velocity)
 			#if (speed != 0.0):
 			#	desired_velocity = desired_velocity_yaml
-			file.write('%f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f\n' % (data_stream.pose.pose.position.x,
+			file.write('%f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f\n' % (data_stream.pose.pose.position.x,
 																					data_stream.pose.pose.position.y,
 																					euler[2],
 																					speed,
@@ -136,6 +138,7 @@ def save_log():
 																					desired_velocity,
 																					int(current_model),
 																					expected_velocity,
+																					slip_ratio,
 																					model_active,
 																					vel_diff,
 																					flag,

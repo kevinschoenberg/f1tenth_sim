@@ -448,6 +448,7 @@ public:
         std_msgs::String msg;
         msg.data = "{'Current_model':" + std::to_string(Current_model) 
                 + ",'expected_velocity':" + std::to_string(expected_velocity) 
+                + ",'slip_ratio':" + std::to_string(slip_ratio)
                 + ",'model_active':" + std::to_string(model_active)
                 + ",'vel_diff':" + std::to_string(vel_diff)
                 + ",'flag':" + std::to_string(flag)
