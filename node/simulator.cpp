@@ -346,10 +346,12 @@ public:
         double dif = (expected_velocity - state.velocity);
         return dif/state.velocity;
     }
-
+    int last_model = Current_model;
     void tcs(){
         model_active = 0;
-        vel_diff = 0;
+        if (last_model != Current_model){
+            vel_diff = 0;
+        }
         flag = 0;
         action = 0;
 
@@ -371,6 +373,7 @@ public:
             if(flag == 1 and vel_diff == 1)
             {
                 action = -1*sign(slip_ratio);
+                last_model = Current_model;
                 chance_model(action);
                 expected_velocity = state.velocity;
             }
