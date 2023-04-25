@@ -1,12 +1,17 @@
 #! /bin/bash
 
 declare -A List_acc
-List_acc=(['.1']=1.11 [.2]=1.25 [.3]=1.43 [.4]=1.67 ['.5']=2.0 [.6]=2.5 [.7]=3.33 [.8]=5.0 [.9]=7.50 [1.0]=7.51)
+List_acc=([1]=1.26 [2]=1.67 [3]=2.0 [4]=2.5 [5]=3.33 [6]=5.0 [7]=7.51)
+#List_acc=([.2]=1.26 [.4]=1.67 [.5]=2.0 [.6]=2.5 [.7]=3.33 [.8]=5.0 [.9]=7.51)
 vel_counter=1
 start_vel=7.
 vel_step_size=0.
 coeff_step_size=0.1
 coeff_step_start=0.1
+model_counter=1 #Need to add model loop
+model_start=0
+model_step_size=1
+
 while [ $vel_counter -le 1 ]
 do
     cd
@@ -18,22 +23,22 @@ do
     sed -i "s/\bdesired_velocity\b:.*/desired_velocity: $new_des/" logParam.yaml
 
     sleep 1
-    counter=1
-    while [ $counter -le 1 ]
+    mu_counter=1
+    while [ $mu_counter -le 1 ]
     do
         cd
         cd ~/catkin_ws/src/f1tenth_sim
 
-        new_coeff=$(echo "$coeff_step_start + ($counter - 1) * $coeff_step_size" | bc -l)
+        new_coeff=$(echo "$coeff_step_start + ($mu_counter - 1) * $coeff_step_size" | bc -l)
         sed -i "s/\bfriction_coeff\b:.*/friction_coeff: $new_coeff/" params.yaml
 
         sed -i "s/\bfriction_coeff\b:.*/friction_coeff: $new_coeff/" logParam.yaml
 
         #Use optimal model on each surface
-        #new_a_max=${List_acc[$new_coeff]}
+        #new_a_max=${List_acc[$model_counter]}
 
         #Use one model for all surfaces
-        new_a_max=${List_acc['1.0']}
+        new_a_max=${List_acc['7']}
 
         #printf '${List_acc[%s]}=%s\n' "${new_coeff}" "$new_a_max"
         sed -i "s/\bmax_accel\b:.*/max_accel: $new_a_max/" params.yaml
@@ -64,7 +69,7 @@ do
         sleep 23
 
         terminator -e "killall -9 rosmaster"
-        ((counter++))
+        ((mu_counter++))
         sleep 5
 
     done

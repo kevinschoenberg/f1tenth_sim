@@ -130,10 +130,8 @@ private:
     std::vector<double> steering_buffer;
 
     // data collected vores kode
-    int reading_buffer_lenght = 10;
-    std::vector<double> readings_;
-    std::vector<double> models = {1.11, 1.25, 1.43, 1.67, 2.0, 2.5, 3.33, 5.0, 7.50, 7.51};
-    std::vector<double> models_mult = {0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.38, 0.81};
+    std::vector<double> models = {1.26, 1.67, 2.0, 2.5, 3.33, 5.0, 7.51};
+    std::vector<double> models_mult = {0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.38};
     int min_model = 0;
     int max_model = models.size();
     int Current_model;
