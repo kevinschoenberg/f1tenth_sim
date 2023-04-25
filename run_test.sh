@@ -24,7 +24,7 @@ do
 
     sleep 1
     mu_counter=1
-    while [ $mu_counter -le 1 ]
+    while [ $mu_counter -le 7 ]
     do
         cd
         cd ~/catkin_ws/src/f1tenth_sim
