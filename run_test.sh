@@ -7,9 +7,9 @@ vel_counter=1
 start_vel=1.
 vel_step_size=1.
 coeff_step_size=0.025
-coeff_step_start=0.55
+coeff_step_start=0.1
 
-model_start=1
+model_start=5
 model_step_size=1
 
 while [ $vel_counter -le 7 ]
@@ -24,7 +24,7 @@ do
 
     sleep 1
     mu_counter=1
-    while [ $mu_counter -le 18 ]
+    while [ $mu_counter -le 36 ]
     do
         model_counter=1
         while [ $model_counter -le 1 ]
@@ -38,7 +38,8 @@ do
             sed -i "s/\bfriction_coeff\b:.*/friction_coeff: $new_coeff/" logParam.yaml
 
             #Use optimal model on each surface
-            new_a_max=${List_acc[$model_counter]}
+            new_model=$(echo "$model_start + ($model_counter - 1) * $model_step_size" | bc -l)
+            new_a_max=${List_acc[$new_model]}
 
             #Use one model for all surfaces
             #new_a_max=${List_acc['7']}

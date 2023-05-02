@@ -133,7 +133,7 @@ private:
     std::vector<double> models = {1.26, 1.67, 2.0, 2.5, 3.33, 5.0, 7.51};
     std::vector<double> models_mult = {0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.38};
     int min_model = 0;
-    int max_model = models.size();
+    int max_model = models.size() - 1;
     int Current_model;
     ros::Publisher event_pub;
 
