@@ -34,10 +34,12 @@ yamldata = yaml.safe_load(filey)
 #desired_velocity_yaml = yamldata['desired_velocity']
 mu = yamldata['friction_coeff']
 a_max = yamldata['max_accel']
+initial_model = yamldata['initial_model']
+target_velocity = yamldata['target_velocity']
 filey.close()
 file = None
 desired_velocity = 0.0 # Start desired velocity
-current_model = 4
+current_model = 0
 expected_velocity = 0.0
 slip_ratio = 0.0
 model_active = 0
@@ -51,11 +53,12 @@ def key_pressed_call_back(data):
 	if (data.data == 'w'):
 		doLog = False
 		#open file
-		file = open(home +'/catkin_ws/src/f1tenth_sim/test_results/longitude-'+ str(gmtime()[1:6]) +'.csv', 'w')
+		file = open(home +'/catkin_ws/src/f1tenth_sim/test_results/' + str(target_velocity) + '_' + "{:.3f}".format(mu) + '_' + str(initial_model) +'.csv', 'w')
 		header = ['x', 'y', 'yaw', 'speed', 'a_max', 'time', 'mu', 'desired_velocity', 'current_model', 'expected_velocity', 'slip_ratio', 'tcs_active', 'vel_diff', 'flag', 'action']
 		writer = csv.writer(file)
 		writer.writerow(header)
 
+		print(file.name)
 		# reset data
 		#data_stream = []
 		# sleep
@@ -86,7 +89,7 @@ def save_drive_call_back(data):
 # Saving model data from runtime readings and model change.
 def event_callback(data):
 	global current_model, expected_velocity, slip_ratio, vel_diff, flag, action, model_active
-	print(data.data)
+	#print(data.data)
 	my_dict = ast.literal_eval(data.data)
 	current_model = my_dict['Current_model']
 	expected_velocity = my_dict['expected_velocity']
@@ -107,7 +110,7 @@ def save_log():
 		sim_time = data_stream.header.stamp.to_sec()
 		#print(sim_time)
 		if simStart + 20 < sim_time: #time.time()
-			print("Time taken for experiment", sim_time-simStart) ##time.time()
+			#print("Time taken for experiment", sim_time-simStart) ##time.time()
 			doLog = False
 			file.close()
 			rospy.signal_shutdown("done")
