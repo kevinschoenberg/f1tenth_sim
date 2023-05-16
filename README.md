@@ -1,7 +1,8 @@
 ## THIS REPO IS MADE FOR BACHELOR PROJECT ANOMALY DETECTION AND MODEL SWAPPING
 ##  [Aarhus F1Tenth Autonomous Racing Team](https://ece.au.dk/en/collaboration/collaboration-with-engineering-students/autonomous-racing-team-f1tenth) 
 
-# F1TENTH Racecar Simulator
+# Based on the f1tenth simulator
+https://github.com/f1tenth/f1tenth_simulator
 
 This is a lightweight 2D simulator of the UPenn F1TENTH Racecar.
 It can be built with ROS, or it can be used as a standalone C++ library.
@@ -41,7 +42,4 @@ Change parameters in ```run_test.sh```.
 Then run ```run_test.sh``` to build it and start simulation experiment(s):
 
     ./run_test.sh
-
-## Based on f1tenth simulator and read to further follow the link
-    https://github.com/f1tenth/f1tenth_simulator
 
