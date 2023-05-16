@@ -1,4 +1,4 @@
-# THIS REPO IS MADE FOR BACHELOR PROJECT ANOMALY DETECTION AND MODEL SWAPPING
+## THIS REPO IS MADE FOR BACHELOR PROJECT ANOMALY DETECTION AND MODEL SWAPPING
 ##  [Aarhus F1Tenth Autonomous Racing Team](https://ece.au.dk/en/collaboration/collaboration-with-engineering-students/autonomous-racing-team-f1tenth) 
 
 # F1TENTH Racecar Simulator
@@ -35,8 +35,9 @@ To clone the repo with the simulator and slip detection into your catkin workspa
     git clone https://github.com/kevinschoenberg/f1tenth_sim.git
 Then navigate to ```/f1tenth_sim```:
 
-    cd ~/catkin_ws/src/f1tenth_sim`
+    cd ~/catkin_ws/src/f1tenth_sim
 
+Change parameters in ```run_test.sh```.
 Then run ```run_test.sh``` to build it and start simulation experiment(s):
 
     ./run_test.sh
