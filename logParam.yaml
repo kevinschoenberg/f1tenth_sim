@@ -8,7 +8,7 @@ width: 0.2032 # meters
 buffer_length: 5
 
 # Test
-target_velocity: 7
+target_velocity: 4
 
 initial_model: 7
 
