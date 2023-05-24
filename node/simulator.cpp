@@ -330,7 +330,7 @@ public:
         double current_seconds = timestamp.toSec();
         double dif = (desired_speed - expected_velocity);
         // max_accel is defined for each friction of coefficient, most of them is 0.3 .
-        double expected_accel = std::min(std::max((4.0 * max_accel / max_speed) * dif * models_mult[Current_model] , -max_accels* models_mult[Current_model]), max_accel* models_mult[Current_model]);
+        double expected_accel = std::min(std::max((4.0 * max_accel / max_speed) * dif * models_mult[Current_model] , -max_accel* models_mult[Current_model]), max_accel* models_mult[Current_model]);
         
         double dt = current_seconds - prev_expected_velocity_calc;
         prev_expected_velocity_calc = current_seconds;
@@ -414,9 +414,9 @@ public:
         // simulate P controller
         //Our model
         compute_accel(desired_speed);
-        expected_velocity = calc_expected_velocity();
-        slip_ratio = calc_slip_ratio(); 
-        tcs();
+        //expected_velocity = calc_expected_velocity();
+        //slip_ratio = calc_slip_ratio(); 
+        //tcs();
 
         double actual_ang = 0.0;
         if (steering_buffer.size() < buffer_length) {
