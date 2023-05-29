@@ -9,10 +9,10 @@ vel_step_size=1.
 coeff_step_size=0.025
 coeff_step_start=0.1
 
-model_start=1
+model_start=7
 model_step_size=1
 
-while [ $vel_counter -le 2 ]
+while [ $vel_counter -le 1 ]
 do
     cd
     cd ~/catkin_ws/src/f1tenth_sim
