@@ -4,7 +4,7 @@ declare -A List_acc
 List_acc=([1]=1.26 [2]=1.67 [3]=2.0 [4]=2.5 [5]=3.33 [6]=5.0 [7]=7.51)
 #List_acc=([.2]=1.26 [.4]=1.67 [.5]=2.0 [.6]=2.5 [.7]=3.33 [.8]=5.0 [.9]=7.51)
 vel_counter=1
-start_vel=4.
+start_vel=1.
 vel_step_size=1.
 coeff_step_size=0.025
 coeff_step_start=0.1
@@ -12,7 +12,7 @@ coeff_step_start=0.1
 model_start=1
 model_step_size=1
 
-while [ $vel_counter -le 4 ]
+while [ $vel_counter -le 2 ]
 do
     cd
     cd ~/catkin_ws/src/f1tenth_sim
@@ -27,7 +27,7 @@ do
     while [ $mu_counter -le 37 ]
     do
         model_counter=1
-        while [ $model_counter -le 7 ]
+        while [ $model_counter -le 1 ]
         do
             cd
             cd ~/catkin_ws/src/f1tenth_sim
