@@ -330,7 +330,7 @@ public:
         double current_seconds = timestamp.toSec();
         double dif = (desired_speed - expected_velocity);
         // max_accel is defined for each friction of coefficient, most of them is 0.3 .
-        double expected_accel = std::min(std::max((8.0 * max_accel / max_speed) * dif * models_mult[Current_model] , -max_accel* models_mult[Current_model]), max_accel* models_mult[Current_model]);
+        double expected_accel = std::min(std::max((4.0 * max_accel / max_speed) * dif * models_mult[Current_model] , -max_accel* models_mult[Current_model]), max_accel* models_mult[Current_model]);
         
         double dt = current_seconds - prev_expected_velocity_calc;
         prev_expected_velocity_calc = current_seconds;
@@ -628,7 +628,7 @@ public:
         if (state.velocity > 0) {
             if (dif > 0) {
                 // accelerate
-                double kp = 4.0 * max_accel / max_speed;
+                double kp = 2.0 * max_accel / max_speed;
                 set_accel(kp * dif);
             } else {
                 // brake
