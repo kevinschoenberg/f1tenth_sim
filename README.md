@@ -43,3 +43,12 @@ Then run ```run_test.sh``` to build it and start simulation experiment(s):
 
     ./run_test.sh
 
+
+### Running notebooks to generate graphs
+The notebooks to generate the graphs we used in the report as well as new ones are located in the scripts folder.
+
+Before running make sure to install seaborn by:
+```pip3 install seaborn```
+
+It can take up to 30 min. to read all the test files but it depends on the computer.
+
